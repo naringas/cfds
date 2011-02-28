@@ -1,0 +1,6 @@
+name = CFD - Emission
+description = Add CFD as a node content type for distribution (emission)
+core = 6.x
+dependencies[] = cfd
+dependencies[] = libraries
+dependencies[] = date_api

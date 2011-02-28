@@ -1,0 +1,4 @@
+name = CFD - Common
+description = Provides common functions for other CFD modules (PDF, schema validation)
+core = 6.x
+dependencies[] = libraries

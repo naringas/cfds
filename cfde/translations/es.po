@@ -1,0 +1,322 @@
+# $Id$
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+# cfde.admin.inc: n/a
+# cfde.import.inc: n/a
+# cfde.module: n/a
+# cfde.rules.inc: n/a
+# cfde.rules_defaults.inc: n/a
+# cfde.rules_forms.inc: n/a
+# cfde.install: n/a
+# cfde.info: n/a
+# b s <naringas@1044190.no-reply.drupal.org>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2011-02-28 12:04-0600\n"
+"PO-Revision-Date: 2011-02-28 12:08-0500\n"
+"Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
+"Language-Team: null\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.6.1\n"
+
+#: cfde.admin.inc:14
+msgid "Automatic ZIP file import"
+msgstr "Importarción automática de ZIP"
+
+#: cfde.admin.inc:15
+msgid "Automatic ZIP file import with cron."
+msgstr "Importarción automática de ZIP usando cron."
+
+#: cfde.admin.inc:19
+msgid "Enabled"
+msgstr "Activado"
+
+#: cfde.admin.inc:20
+msgid "Enable automatic ZIP import"
+msgstr "Activar importarción automática de ZIP"
+
+#: cfde.admin.inc:24
+msgid "ZIP file name"
+msgstr "Nombre de archivo ZIP"
+
+#: cfde.admin.inc:26
+msgid "without \".zip\""
+msgstr "sin \".zip\""
+
+#: cfde.admin.inc:30
+msgid "Path where to look for \"ZIP file name\""
+msgstr "Ruta en dónde buscar \"Nombre de archivo ZIP\""
+
+#: cfde.admin.inc:32
+msgid "It is recomended to use a restrictive \".htaccess\" file in this directory"
+msgstr ""
+"Es recomendado utilizar un archivo \".htaccess\" con restricciones en "
+"este directorio"
+
+#: cfde.import.inc:10
+msgid "Select a @type file"
+msgstr "Seleccione un archivo @type"
+
+#: cfde.import.inc:14
+msgid "Submit"
+msgstr "Enviar"
+
+#: cfde.import.inc:26 cfde.module:238
+msgid "You must submit a @type file"
+msgstr "Debe enviar un archivo @type"
+
+#: cfde.import.inc:34 cfde.module:671
+msgid "@num CFDs imported from @filename"
+msgstr "@num CFDs importadas desde @filename"
+
+#: cfde.import.inc:37 cfde.module:675
+msgid "@file not imported succesfully"
+msgstr "@file no fue importado satisfactoriamente"
+
+#: cfde.rules.inc:15 cfde.rules_defaults.inc:17
+msgid "Send email to assigned user"
+msgstr "Enviar email al usuario asignado"
+
+#: cfde.rules.inc:19
+msgid "Content"
+msgstr "Contenido"
+
+#: cfde.rules.inc:21
+msgid "Node of type Emitted FE"
+msgstr "Nodo tipo FE Emitida"
+
+#: cfde.rules.inc:25
+msgid "Sends a notification email to the user (client) who is the reciptient of the FE"
+msgstr ""
+"Envia una notificacion por correo electronico al usuario (cliente) "
+"receptor de la FE"
+
+#: cfde.rules_forms.inc:14
+msgid "Sender"
+msgstr "Remitente"
+
+#: cfde.rules_forms.inc:16
+msgid "The mail's from address. Leave it empty to use the site-wide configured address."
+msgstr ""
+"El remitente del correo. Dejarlo vacío para utilizar la dirección "
+"del sitio."
+
+#: cfde.rules_forms.inc:20
+msgid "Subject"
+msgstr "Asunto"
+
+#: cfde.rules_forms.inc:22
+msgid "The mail's subject."
+msgstr "El asunto del correo"
+
+#: cfde.rules_forms.inc:26
+msgid "HTML message"
+msgstr "Mensaje HTML"
+
+#: cfde.rules_forms.inc:28
+msgid "The message body in HTML format."
+msgstr "El contenido del mensaje en formato HTML."
+
+#: cfde.rules_forms.inc:32
+msgid "Text message"
+msgstr "Mensaje de texto"
+
+#: cfde.rules_forms.inc:34
+msgid "Optional plaintext portion of a multipart message."
+msgstr "Parte opcional en solo texto (sin HTML)."
+
+#: cfde.module:14
+msgid "Emitted CFD"
+msgstr "CFD emitido"
+
+#: cfde.module:16
+msgid "Provides content type support for Mexican CFDs for distribution (emission)"
+msgstr ""
+"Proporciona soporte para Facturas Electronicas emitidas (de Mexico) "
+"como un tipo de contenido"
+
+#: cfde.module:18;357
+msgid "FE #"
+msgstr "FE #"
+
+#: cfde.module:180;345;357
+msgid "Download"
+msgstr "Descargar"
+
+#: cfde.module:188
+msgid "Select @type file"
+msgstr "Seleccione un archivo @type"
+
+#: cfde.module:191
+msgid "The CFD in XML format"
+msgstr "El CFD en formato XML"
+
+#: cfde.module:234
+msgid "The XML file %file is not a valid CFD"
+msgstr "El archivo XML %file no es un CFD valido"
+
+#: cfde.module:334
+msgid "FE-@title"
+msgstr "FE-@title"
+
+#: cfde.module:357
+msgid "Date"
+msgstr "Fecha"
+
+#: cfde.module:372
+msgid "No CFDs available."
+msgstr "No CFDs disponibles."
+
+#: cfde.module:433
+msgid "Date filter"
+msgstr "Filtro de fecha"
+
+#: cfde.module:437
+msgid "Start date"
+msgstr "Fecha inicial"
+
+#: cfde.module:440;448
+msgid "Format: yyyy-mm-dd"
+msgstr "Formato: aaaa-mm-dd"
+
+#: cfde.module:445
+msgid "End date"
+msgstr "Fecha final"
+
+#: cfde.module:455
+msgid "Filter"
+msgstr "Filtrar"
+
+#: cfde.module:459;469;487
+msgid "Reset"
+msgstr "Reiniciar"
+
+#: cfde.module:477
+msgid "Please use the calendar popup or the format: yyyy-mm-dd"
+msgstr "Por favor utilize el calendario emergente o el formato: aaaa-mm-dd"
+
+#: cfde.module:601
+msgid "Username (RFC) change"
+msgstr "El nombre de usuario (RFC) cambio"
+
+#: cfde.module:621
+msgid "Recieve notification on new FEs"
+msgstr "Recibir notificaciones de nuevas FEs"
+
+#: cfde.module:623
+msgid "Check this option if you wish to receive an email notification whenever FEs are emitted for you"
+msgstr ""
+"Marque esta opción si desea recibir una notificación por correo "
+"electrónico cuando haya nuevas FEs disponibles para usted"
+
+#: cfde.module:730 cfde.install:67
+msgid "Date of the CFD"
+msgstr "Fecha del CFD"
+
+#: cfde.module:731
+msgid "Full date of the CFD"
+msgstr "Fecha completa del CFD"
+
+#: cfde.module:732 cfde.install:62
+msgid "Receiving party's RFC (client)"
+msgstr "RFC del receptor (cliente)"
+
+#: cfde.module:733 cfde.install:56
+msgid "{users}.uid associated with the CFD"
+msgstr "{users}.uid asociada con el CFD"
+
+#: cfde.module:734
+msgid "HTML links to download this CFD (XML and PDF)"
+msgstr "Ligas en HTML para descargar este CFD (en XML y PDF)"
+
+#: cfde.module:671;675;702
+msgid "cfde"
+msgstr "cfde"
+
+#: cfde.module:702
+msgid "@num CFDs deleted"
+msgstr "@num CFDs elimidadas"
+
+#: cfde.module:105
+msgid "create CFDs"
+msgstr "crear CFDs"
+
+#: cfde.module:105
+msgid "view assigned CFDs"
+msgstr "ver CFDs asignados"
+
+#: cfde.module:105
+msgid "delete any CFD"
+msgstr "eliminar cualquier CFD"
+
+#: cfde.module:105
+msgid "view any CFD"
+msgstr "ver cualquier CFD"
+
+#: cfde.module:105
+msgid "administer cfde"
+msgstr "Administrar cfde"
+
+#: cfde.module:32
+msgid "Download PDF"
+msgstr "Descargar PDF"
+
+#: cfde.module:40
+msgid "Download XML"
+msgstr "Descargar XML"
+
+#: cfde.module:48
+msgid "HTML View"
+msgstr "Vista HTML"
+
+#: cfde.module:55
+msgid "View Facturas Electronicas"
+msgstr "Ver Facturas Electronicas"
+
+#: cfde.module:63
+msgid "Import CFDs"
+msgstr "Importar CFDs"
+
+#: cfde.module:64
+msgid "Import CFDs from a compressed file."
+msgstr "Importa CFDs desde un archivo comprimido."
+
+#: cfde.module:73
+msgid "Emitted CFD settings"
+msgstr "Configuración de CFD Emitida"
+
+#: cfde.module:74
+msgid "Configure Emitted CFD options"
+msgstr "Configurar opciones de CFD"
+
+#: cfde.install:35
+msgid "Stores CFDs emitted in XML. also stores RFC and date for access control and searching"
+msgstr ""
+"Guarda CFD en XML y también el RFC y la fecha para control de acceso "
+"y busqueda"
+
+#: cfde.install:42
+msgid "The cfd's {node}.nid"
+msgstr "El {node}.nid del CFD"
+
+#: cfde.install:49
+msgid "The cfd's {node_revisions}.vid"
+msgstr "La {node_revisions}.vid del CFD"
+
+#: cfde.install:73
+msgid "The XML contents of the CFD"
+msgstr "El Contenido en XML del CFD"
+
+#: cfde.info:0
+msgid "CFD - Emission"
+msgstr "CFD - Emisisón"
+
+#: cfde.info:0
+msgid "Add CFD as a node content type for distribution (emission)"
+msgstr "Agrega CFD como un tipo de contenido para la distribución (emisión)"
