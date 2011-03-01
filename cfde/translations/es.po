@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2011-02-28 12:04-0600\n"
-"PO-Revision-Date: 2011-02-28 12:08-0500\n"
+"PO-Revision-Date: 2011-03-01 11:00-0500\n"
 "Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
@@ -27,11 +27,11 @@ msgstr ""
 
 #: cfde.admin.inc:14
 msgid "Automatic ZIP file import"
-msgstr "Importarción automática de ZIP"
+msgstr "Importación automática de ZIP"
 
 #: cfde.admin.inc:15
 msgid "Automatic ZIP file import with cron."
-msgstr "Importarción automática de ZIP usando cron."
+msgstr "Importación automática de ZIP usando cron."
 
 #: cfde.admin.inc:19
 msgid "Enabled"
@@ -39,7 +39,7 @@ msgstr "Activado"
 
 #: cfde.admin.inc:20
 msgid "Enable automatic ZIP import"
-msgstr "Activar importarción automática de ZIP"
+msgstr "Activar importación automática de ZIP"
 
 #: cfde.admin.inc:24
 msgid "ZIP file name"
@@ -315,7 +315,7 @@ msgstr "El Contenido en XML del CFD"
 
 #: cfde.info:0
 msgid "CFD - Emission"
-msgstr "CFD - Emisisón"
+msgstr "CFD - Emisión"
 
 #: cfde.info:0
 msgid "Add CFD as a node content type for distribution (emission)"
