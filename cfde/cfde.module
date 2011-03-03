@@ -577,6 +577,9 @@ function cfde_user($op, &$edit, &$account, $category = NULL) {
       if (user_access('administer users'))
         break;
       if (variable_get('cfde_username_validate', TRUE)) {
+        // if we're updating a user: (ugly hack)
+        if ($edit['name'] == '' && $account->name != '')
+          $edit['name'] = $account->name;
         if (!@preg_match($rfc_regexp, $edit['name']))
           form_set_error('name', t('Invalid RFC'));
       }
