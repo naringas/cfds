@@ -14,8 +14,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-28 12:04-0600\n"
-"PO-Revision-Date: 2011-03-01 11:00-0500\n"
+"POT-Creation-Date: 2011-03-03 10:55-0600\n"
+"PO-Revision-Date: 2011-03-03 11:00-0500\n"
 "Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
@@ -25,39 +25,63 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: cfde.admin.inc:14
+#: cfde.admin.inc:13
 msgid "Automatic ZIP file import"
 msgstr "Importación automática de ZIP"
 
-#: cfde.admin.inc:15
+#: cfde.admin.inc:14
 msgid "Automatic ZIP file import with cron."
 msgstr "Importación automática de ZIP usando cron."
 
-#: cfde.admin.inc:19
+#: cfde.admin.inc:18
 msgid "Enabled"
 msgstr "Activado"
 
-#: cfde.admin.inc:20
+#: cfde.admin.inc:19
 msgid "Enable automatic ZIP import"
-msgstr "Activar importación automática de ZIP"
+msgstr "Activar Importación automática de ZIP"
 
-#: cfde.admin.inc:24
+#: cfde.admin.inc:23
 msgid "ZIP file name"
 msgstr "Nombre de archivo ZIP"
 
-#: cfde.admin.inc:26
+#: cfde.admin.inc:25
 msgid "without \".zip\""
 msgstr "sin \".zip\""
 
-#: cfde.admin.inc:30
+#: cfde.admin.inc:29
 msgid "Path where to look for \"ZIP file name\""
 msgstr "Ruta en dónde buscar \"Nombre de archivo ZIP\""
 
-#: cfde.admin.inc:32
+#: cfde.admin.inc:31
 msgid "It is recomended to use a restrictive \".htaccess\" file in this directory"
 msgstr ""
 "Es recomendado utilizar un archivo \".htaccess\" con restricciones en "
 "este directorio"
+
+#: cfde.admin.inc:36
+msgid "User Registration"
+msgstr "Registro de usuarios"
+
+#: cfde.admin.inc:37
+msgid "These restrictions are ignored if user has \"administer users\" permision"
+msgstr ""
+"Estas restricciones son ignoaradas para usuarios con el permiso \"administrar "
+"usuarios\""
+
+#: cfde.admin.inc:41
+msgid "Validate RFC on user registration"
+msgstr "Validar el RFC cuando un usuario se registra"
+
+#: cfde.admin.inc:42
+msgid "Prevents malformed RFCs from being usernames. Only checks RFC plausibility."
+msgstr ""
+"Evita que RFCs malformados sean nombres de usuario. Solo checa la "
+"plausibilidad del RFC."
+
+#: cfde.admin.inc:47
+msgid "Prevent registration of users without assigned CFDs"
+msgstr "Evita que RFCs sin CFDs se puedan registrar"
 
 #: cfde.import.inc:10
 msgid "Select a @type file"
@@ -71,11 +95,11 @@ msgstr "Enviar"
 msgid "You must submit a @type file"
 msgstr "Debe enviar un archivo @type"
 
-#: cfde.import.inc:34 cfde.module:671
+#: cfde.import.inc:34 cfde.module:677
 msgid "@num CFDs imported from @filename"
 msgstr "@num CFDs importadas desde @filename"
 
-#: cfde.import.inc:37 cfde.module:675
+#: cfde.import.inc:37 cfde.module:681
 msgid "@file not imported succesfully"
 msgstr "@file no fue importado satisfactoriamente"
 
@@ -138,8 +162,8 @@ msgstr "CFD emitido"
 #: cfde.module:16
 msgid "Provides content type support for Mexican CFDs for distribution (emission)"
 msgstr ""
-"Proporciona soporte para Facturas Electronicas emitidas (de Mexico) "
-"como un tipo de contenido"
+"Proporciona soporte para Facturas Electronicas emitidas (de Mexico) como un "
+"tipo de contenido"
 
 #: cfde.module:18;357
 msgid "FE #"
@@ -201,45 +225,53 @@ msgstr "Reiniciar"
 msgid "Please use the calendar popup or the format: yyyy-mm-dd"
 msgstr "Por favor utilize el calendario emergente o el formato: aaaa-mm-dd"
 
-#: cfde.module:601
+#: cfde.module:581
+msgid "Invalid RFC"
+msgstr "RFC Invalido"
+
+#: cfde.module:587
+msgid "RFC not recognized"
+msgstr "Su RFC no ha sido reconocido"
+
+#: cfde.module:607
 msgid "Username (RFC) change"
 msgstr "El nombre de usuario (RFC) cambio"
 
-#: cfde.module:621
+#: cfde.module:627
 msgid "Recieve notification on new FEs"
 msgstr "Recibir notificaciones de nuevas FEs"
 
-#: cfde.module:623
+#: cfde.module:629
 msgid "Check this option if you wish to receive an email notification whenever FEs are emitted for you"
 msgstr ""
 "Marque esta opción si desea recibir una notificación por correo "
 "electrónico cuando haya nuevas FEs disponibles para usted"
 
-#: cfde.module:730 cfde.install:67
+#: cfde.module:736 cfde.install:67
 msgid "Date of the CFD"
 msgstr "Fecha del CFD"
 
-#: cfde.module:731
+#: cfde.module:737
 msgid "Full date of the CFD"
 msgstr "Fecha completa del CFD"
 
-#: cfde.module:732 cfde.install:62
+#: cfde.module:738 cfde.install:62
 msgid "Receiving party's RFC (client)"
 msgstr "RFC del receptor (cliente)"
 
-#: cfde.module:733 cfde.install:56
+#: cfde.module:739 cfde.install:56
 msgid "{users}.uid associated with the CFD"
 msgstr "{users}.uid asociada con el CFD"
 
-#: cfde.module:734
+#: cfde.module:740
 msgid "HTML links to download this CFD (XML and PDF)"
 msgstr "Ligas en HTML para descargar este CFD (en XML y PDF)"
 
-#: cfde.module:671;675;702
+#: cfde.module:677;681;708
 msgid "cfde"
 msgstr "cfde"
 
-#: cfde.module:702
+#: cfde.module:708
 msgid "@num CFDs deleted"
 msgstr "@num CFDs elimidadas"
 
@@ -287,13 +319,13 @@ msgstr "Importar CFDs"
 msgid "Import CFDs from a compressed file."
 msgstr "Importa CFDs desde un archivo comprimido."
 
-#: cfde.module:73
-msgid "Emitted CFD settings"
-msgstr "Configuración de CFD Emitida"
+#: cfde.module:73 cfde.info:0
+msgid "CFD - Emission"
+msgstr "CFD - Emisión"
 
 #: cfde.module:74
-msgid "Configure Emitted CFD options"
-msgstr "Configurar opciones de CFD"
+msgid "Configure CFD - Emission settings"
+msgstr "Opcionces de CFD - Emisión"
 
 #: cfde.install:35
 msgid "Stores CFDs emitted in XML. also stores RFC and date for access control and searching"
@@ -312,10 +344,6 @@ msgstr "La {node_revisions}.vid del CFD"
 #: cfde.install:73
 msgid "The XML contents of the CFD"
 msgstr "El Contenido en XML del CFD"
-
-#: cfde.info:0
-msgid "CFD - Emission"
-msgstr "CFD - Emisión"
 
 #: cfde.info:0
 msgid "Add CFD as a node content type for distribution (emission)"
