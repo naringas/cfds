@@ -2,13 +2,13 @@
 # Spanish translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from file: cfd.info: n/a
-# naringas <webmaster@casabaltazar.com>, 2011.
+# b s <naringas@1044190.no-reply.drupal.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-02-23 11:45-0600\n"
-"PO-Revision-Date: 2011-02-23 11:47-0500\n"
-"Last-Translator: naringas <webmaster@casabaltazar.com>\n"
+"POT-Creation-Date: 2011-03-04 12:34-0600\n"
+"PO-Revision-Date: 2011-03-04 12:35-0500\n"
+"Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -18,9 +18,9 @@ msgstr ""
 "X-Generator: Virtaal 0.6.1\n"
 
 #: cfd.info:0
-msgid "Facturas Electronicas Functions"
-msgstr "Funciones de Facturas Electronicas"
+msgid "CFD - Common"
+msgstr "CFD - Común"
 
 #: cfd.info:0
-msgid "Provides common functions for other FE modules (PDF, schema validation)"
-msgstr "Proveé funciones comunes para otros modulos de FE (PDF, validación)"
+msgid "Provides common functions for other CFD modules (PDF, schema validation)"
+msgstr "Proveé funciones comunes para otros modulos CFD (PDF, validación)"
