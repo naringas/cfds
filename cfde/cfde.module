@@ -669,20 +669,26 @@ function cfde_view_html($node) {
 function cfde_cron() {
   cfde_purge();
   // automatic zip import
-  $enabled = variable_get('cfde_zip_enable', FALSE);
-  if ($enabled) {
-    $path = variable_get('cfde_zip_path', 'sites/default/cfd');
-    $filename = variable_get('cfde_zip_filename', 'cfd');
-    $filename_mask = '^' . $filename . '\.zip$';
-    if ($files = array_values(file_scan_directory($path, $filename_mask, array('.', '..', 'CVS'), 0, FALSE))) {
-      module_load_include('inc', 'cfde', 'cfde.import');
-      if ($count = cfde_import_zip($files[0]->filename)) {
-        watchdog('cfde', '@num CFDs imported from @filename', array('@num' => $count, '@filename' => "$filename.zip"), WATCHDOG_INFO);
-        file_delete($files[0]->filename);
-      }
-      else {
-        watchdog('cfde', '@file not imported succesfully', array('@file' => "$filename.zip"), WATCHDOG_NOTICE);
-      }
+  if (variable_get('cfde_zip_enable', FALSE))
+    cfde_auto_zip_import();
+}
+
+/**
+ * Imports .zip files (called from cfde_cron())
+ *
+ **/
+function cfde_auto_zip_import() {
+  $path = variable_get('cfde_zip_path', 'sites/default/cfd');
+  $filename = variable_get('cfde_zip_filename', 'cfd');
+  $filename_mask = '^' . $filename . '\.zip$';
+  if ($files = array_values(file_scan_directory($path, $filename_mask, array('.', '..', 'CVS'), 0, FALSE))) {
+    module_load_include('inc', 'cfde', 'cfde.import');
+    if ($count = cfde_import_zip($files[0]->filename)) {
+      watchdog('cfde', '@num CFDs imported from @filename', array('@num' => $count, '@filename' => "$filename.zip"), WATCHDOG_INFO);
+      file_delete($files[0]->filename);
+    }
+    else {
+      watchdog('cfde', '@file not imported succesfully', array('@file' => "$filename.zip"), WATCHDOG_NOTICE);
     }
   }
 }
@@ -692,23 +698,32 @@ function cfde_cron() {
  * called from cfde_cron()
  **/
 function cfde_purge() {
-  // generic RFC OR time() - 5 weeks (3024000)
-  $result = db_query("SELECT {cfde}.nid FROM {cfde}, {node} WHERE {cfde}.cliente_rfc = '%s' OR {node}.created <= %d GROUP BY {cfde}.nid", CFD_RFC_GENERIC, time() - 3024000);
+  $expire_time = variable_get('cfde_expire_time', 3024000);
+  // make sure that if cfde_expire_time is 0, expiration is 0
+  $now_time = time();
+  $expiration = $now_time - ($expire_time == 0 ? $now_time : $expire_time);
+  $result = db_query("SELECT {cfde}.nid FROM {cfde}, {node} WHERE {cfde}.cliente_rfc = '%s' OR {node}.created <= %d GROUP BY {cfde}.nid", CFD_RFC_GENERIC, $expiration);
   $count = 0;
   while ($cfd = db_fetch_array($result)) {
-    $count++;
-    //do this instead of node_delte() as it is faster? but incomplete e.g. doesn't erase aliases
+    // do this instead of node_delete() as it is faster?
     db_query('DELETE FROM {node} WHERE nid = %d', $cfd['nid']);
     db_query('DELETE FROM {node_revisions} WHERE nid = %d', $cfd['nid']);
+
+    //what node_invoke($node, 'delete') would end up doing:
     db_query('DELETE FROM {cfde} WHERE nid = %d', $cfd['nid']);
 
-    //Code from node_delete(); Remove this node from the search index if needed.
+    node_invoke_nodeapi(node_load($cfd['nid']), 'delete');
+
+    // Remove this node from the search index if needed.
     if (function_exists('search_wipe')) {
-      search_wipe($cfd['nid'], 'node');
+      search_wipe($node->nid, 'node');
     }
+    $count++;
   }
-  if ($count > 0) 
+  if ($count > 0) {
+    cache_clear_all();
     watchdog('cfde', '@num CFDs deleted', array('@num' => $count), WATCHDOG_INFO);
+  }
 }
 
 /**

@@ -7,7 +7,6 @@
  * Admin form called from path 'admin/settings/cfde'
  **/
 function cfde_admin_form() {
-  // Cron job settings
   $form['cfde']['zip'] = array(
     '#type' => 'fieldset',
     '#title' => t('Automatic ZIP file import'),
@@ -30,6 +29,17 @@ function cfde_admin_form() {
     '#type' => 'textfield',
     '#description' => t('It is recomended to use a restrictive ".htaccess" file in this directory'),
     '#default_value' => variable_get('cfde_zip_path', 'sites/default/cfd'),
+  );
+  $form['cfde']['expire'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Emitted CFD node expiration'),
+    '#description' => t('Automatic node deletion with cron.'),
+  );
+  $form['cfde']['expire']['cfde_expire_time'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum node age <em>in seconds</em>'),
+    '#description' => t("Nodes older than these seconds will be deleted. Based on node creation date (not CFD emission date).<br /><em>0 seconds</em> disables node expiration."),
+    '#default_value' => variable_get('cfde_expire_time', 3024000),
   );
   $form['cfde']['user'] = array(
     '#type' => 'fieldset',
