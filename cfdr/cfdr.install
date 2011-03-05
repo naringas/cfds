@@ -26,19 +26,11 @@ function cfdr_schema() {
   $schema['cfdr'] = array(
     'description' => t('Stores CFDs received as file path; and also both RFCs, date, series, and number (folio)'),
     'fields' => array(
-      'nid' => array(
-        'type' => 'int',
+      'cfdr_id' => array(
+        'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => 0,
-        'description' => t("The cfd's {node}.nid"),
-      ),
-      'vid' => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => t("The cfd's {node_revisions}.vid"),
+        'description' => t("The cfdr id"),
       ),
       'serie' => array(
         'type' => 'varchar',
@@ -77,11 +69,12 @@ function cfdr_schema() {
         'description' => t('The full filename of the XML file'),
       ),
     ),
-    'primary key' => array('nid'),
+    'primary key' => array('cfdr_id'),
     'indexes' => array(
       'date' => array('fecha_cfd'),
       'serie' => array('serie'),
       'folio' => array('folio'),
+      'emisor' => array('emisor_rfc')
     ),
   );
   return $schema;

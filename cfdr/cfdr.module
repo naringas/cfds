@@ -4,37 +4,28 @@
  */
 
 /**
- * Implementation of hook_node_info().
- */
-function cfdr_node_info() {
-  return array(
-    'cfdr' => array(
-      'name' => 'Received CFD',
-      'module' => 'cfdr',
-      'description' => t("Provides content type support for Mexican CFDs which have been received"),
-      'has_title' => TRUE,
-      'title_label' => t('FE #'),
-      'has_body' => FALSE,
-      'locked' => TRUE,
-    ),
-  );
-}
-
-/**
  * Implementation of hook_menu().
  */
 function cfdr_menu() {
   $menu = array();
-  $menu['node/%node/download/pdf'] = array(
+  $menu['cfdr'] = array(
+    'title' => 'View CFDs',
+    'description' => 'View all CFDs',
+    'access callback' => 'user_access',
+    'access arguments' => array('view assigned FEs'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cfdr_view_cfds'),
+  );
+  $menu['cfdr/%cfdr/pdf'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Download',
     'access callback' => 'cfdr_access',
     'access arguments' => array('view', 1),
-    'page callback' => 'cfd_download_pdf',
+    'page callback' => 'cfdr_download_pdf',
     'page arguments' => array(1),
     'file' => './cfd.pdf.inc'
   );
-  $menu['node/%node/download/xml'] = array(
+  $menu['cfdr/%cfdr/xml'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Download',
     'access callback' => 'cfdr_access',
@@ -42,21 +33,13 @@ function cfdr_menu() {
     'page callback' => 'cfdr_download_xml',
     'page arguments' => array(1),
   );
-  $menu['node/%node/html'] = array(
+  $menu['cfdr/%cfdr/html'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'HTML View',
     'access callback' => 'cfdr_access',
     'access arguments' => array('view', 1),
     'page callback' => 'cfdr_view_html',
     'page arguments' => array(1),
-  );
-  // MUST RENAME
-  $menu['cfdr'] = array(
-    'title' => 'View Facturas Electronicas',
-    'access callback' => 'user_access',
-    'access arguments' => array('view assigned FEs'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('cfdr_view_cfds'),
   );
   //Admin menu
   $menu['admin/settings/cfdr'] = array(
@@ -75,7 +58,7 @@ function cfdr_menu() {
  * Implementation of hook_perm().
  */
 function cfdr_perm() {
-  return array('administer cfdr');
+  return array('administer cfdr', 'view any CFD');
 }
 
 
@@ -88,41 +71,8 @@ function cfdr_access($op, $node, $account = NULL) {
   global $user;
   if (!isset($account))
     $account = $user;
-  
-  switch ($op) {
-    case 'view':
-      return TRUE;
 
-    case 'create':
-      return TRUE;
-
-    case 'delete':
-      return TRUE;
-
-    case 'update':
-      return FALSE;
-  }
-}
-
-/**
- * Alter node/add/cfdr form into beign useless
- */
-function cfdr_form_cfdr_node_form_alter(&$form, &$form_state) {
-  // disable basically everything
-  $form['revision_information']['#access'] = FALSE;
-  $form['author']['#access'] = FALSE;
-  $form['options']['#access'] = FALSE;
-  $form['buttons']['#access'] = FALSE;
-}
-
-
-
-/**
- * Implementation of hook_validate();
- *
- */
-function cfdr_validate($node, &$form) {
-
+  return TRUE;
 }
 
 /**
@@ -146,50 +96,24 @@ function cfdr_autofill_fields(&$node) {
 }
 
 /**
- * Implementation of hook_instert().
+ *
  */
-function cfdr_insert($node) {
-  cfdr_autofill_fields($node);
+function cfdr_insert($) {
+  cfdr_autofill_fields($);
   
   
   //if $node->cliente_rfc matches a username, set $node->cliente_uid to that user
   $node->cliente_uid = cfdr_rfc2uid($node->cliente_rfc);
-  
-  //for updating title
-  $change_node = array(
-    'nid' => $node->nid,
-    'vid' => $node->vid,
-    'title' => $node->title,
-  );
-  
-  //make sure generic RFC they are not publised
-  if ($node->cliente_rfc == 'XAXX010101000') {
-    $change_node['status'] = 0;
-  }
-  
-  drupal_write_record('cfd', $node);
-  drupal_write_record('node', $change_node, 'nid');
-  drupal_write_record('node_revisions', $change_node , 'vid');
-}
 
-/**
- * Implementation of hook_update().
- */
-function cfdr_update($node) {
-  //revisions are disabled on the form
-  if ($node->revision) {
-    cfdr_instert($node);
-  }
-  else {
-    //do nothing
-  }
+  if ($node->cliente_rfc == 'XAXX010101000') {
+  drupal_write_record('cfdr', $);
 }
 
 /**
  * Implementation of hook_delete().
  */
 function cfdr_delete(&$node) {
-  db_query('DELETE FROM {cfd} WHERE nid = %d', $node->nid);
+  db_query('DELETE FROM {cfd} WHERE cfdr_id = %d', $node->cfdr_id);
 }
 
 /**
