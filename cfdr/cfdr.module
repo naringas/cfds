@@ -51,7 +51,7 @@ function cfdr_menu() {
     'page arguments' => array(1),
   );
   // MUST RENAME
-  $menu['cfdrs'] = array(
+  $menu['cfdr'] = array(
     'title' => 'View Facturas Electronicas',
     'access callback' => 'user_access',
     'access arguments' => array('view assigned FEs'),
@@ -105,68 +105,14 @@ function cfdr_access($op, $node, $account = NULL) {
 }
 
 /**
- * Implementation of hook_form().
+ * Alter node/add/cfdr form into beign useless
  */
-function cfdr_form(&$node, $form_state) {
-  //get info defined in cfdr_node_info()
-  $type = node_get_types('type', $node);
-  
-  $form = array();
-  $form['title'] = array(
-    '#type' => 'textfield',
-    '#title' => $type->title_label,
-    '#required' => FALSE,
-    '#default_value' => $node->title,
-    '#weight' => -5,
-    '#maxlenght' => 255,
-    '#disabled' => TRUE,
-  );
-  $form['fecha_cfd'] = array(
-    '#type' => 'textfield',
-    '#title' => 'Fecha y hora',
-    '#required' => FALSE,
-    '#default_value' => $node->fecha_cfd,
-    '#weight' => 0,
-    '#maxlenght' => 13,
-    '#disabled' => TRUE,
-  );
-  $form['cliente_rfc'] = array(
-    '#type' => 'textfield',
-    '#title' => 'RFC receptor',
-    '#required' => FALSE,
-    '#default_value' => $node->cliente_rfc,
-    '#weight' => 1,
-    '#maxlenght' => 13,
-    '#disabled' => TRUE,
-  );
-  //for uploading XML file
-  //possible check for $node->nid NULLity
-  if ($node->nid) {
-    $form['xml_file']['#prefix'] = '<strong>' . t('Download') . ':</strong><br />';
-    $form['xml_file']['#value'] = cfdr_get_dl_links($node->title, $node->nid);
-    $form['xml_file']['#weight'] = 5;
-  }
-  else {
-    $form['#attributes']['enctype'] = 'multipart/form-data';
-    $form['xml_file'] = array(
-      '#type' => 'file',
-      '#title' => t('Select @type file', array('@type' => 'XML')),
-      '#required' => FALSE,
-      '#weight' => 5,
-      '#description' => t('The CFD in XML format'),
-    );
-  }
-  $form['#submit'][] = 'cfdr_xml_file_submit';
-  return $form;
-}
-
 function cfdr_form_cfdr_node_form_alter(&$form, &$form_state) {
-  // disable revisions and previews, to make my life easy
+  // disable basically everything
   $form['revision_information']['#access'] = FALSE;
-  $form['buttons']['preview']['#access'] = FALSE;
-  // if we're on the edit form, then no 'save' button
-  if ($form['buttons']['delete'])
-    $form['buttons']['submit']['#access'] = FALSE;
+  $form['author']['#access'] = FALSE;
+  $form['options']['#access'] = FALSE;
+  $form['buttons']['#access'] = FALSE;
 }
 
 
