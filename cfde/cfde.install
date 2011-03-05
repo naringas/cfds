@@ -23,6 +23,9 @@ function cfde_uninstall() {
   variable_del('cfde_zip_enable');
   variable_del('cfde_zip_path');
   variable_del('cfde_zip_filename');
+  variable_del('cfde_expire_time');
+  variable_del('cfde_username_validate');
+  variable_del('cfde_register_existing_rfc');
   // Use schema API to delete database table.
   drupal_uninstall_schema('cfde');
 }
