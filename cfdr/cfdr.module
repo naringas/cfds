@@ -51,7 +51,7 @@ function cfdr_menu() {
     'page arguments' => array(1),
   );
   // MUST RENAME
-  $menu['cfds'] = array(
+  $menu['cfdrs'] = array(
     'title' => 'View Facturas Electronicas',
     'access callback' => 'user_access',
     'access arguments' => array('view assigned FEs'),
@@ -60,8 +60,8 @@ function cfdr_menu() {
   );
   //Admin menu
   $menu['admin/settings/cfdr'] = array(
-    'title' => 'Received FE settings',
-    'description' => 'Configure received FE options',
+    'title' => 'CFD - Received',
+    'description' => 'Configure CFD - Received options',
     'access callback' => 'user_access',
     'access arguments' => array('administer cfdr'),
     'page callback' => 'drupal_get_form',
@@ -161,22 +161,25 @@ function cfdr_form(&$node, $form_state) {
 }
 
 function cfdr_form_cfdr_node_form_alter(&$form, &$form_state) {
-  
+  // disable revisions and previews, to make my life easy
+  $form['revision_information']['#access'] = FALSE;
+  $form['buttons']['preview']['#access'] = FALSE;
+  // if we're on the edit form, then no 'save' button
+  if ($form['buttons']['delete'])
+    $form['buttons']['submit']['#access'] = FALSE;
 }
 
 
 
 /**
  * Implementation of hook_validate();
- * checks if a XML file was uploaded and if it is a valid CFD in the node form.
+ *
  */
 function cfdr_validate($node, &$form) {
 
 }
 
 /**
- * Fills $node with the details read from the $node->xml_file;
- * fills fecha_cfd, cliente_rfc, and title (= serie + folio)
  * 
  * @param StdObject $node (by reference)
  */
@@ -337,94 +340,19 @@ function cfdr_view_cfds() {
  * 
  */
 function cfdr_datefilter_form() {
-  drupal_add_css(drupal_get_path('module', 'cfd') . '/basa.datepick.css');
-  drupal_add_js(drupal_get_path('module', 'cfd')  . '/datepick/jquery.datepick.js');
-  // @todo Detect language, somehow
-  drupal_add_js(drupal_get_path('module', 'cfd') . '/datepick/jquery.datepick-es.js');
-  drupal_add_js(drupal_get_path('module', 'cfd') . '/cfdr_datepick.js');
-  
-  
-  $form['date_filter'] = array(
-    '#type' => 'fieldset',
-  );
-  $cal_img = drupal_get_path('module', 'cfd') . '/datepick/calendar-blue.gif';
-  $form['date_filter']['range'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Dates range'),
-    '#size' => 26,
-    '#maxlenght' => 24,
-    '#description' => t('Format: yyyy-mm-dd -- yyyy-mm-dd'),
-    '#suffix' => '<div style="display: none;"><img id="calImg" src="' . $cal_img . '" class="trigger"/></div>',
-    '#default_value' => $_SESSION['cfds_filter']['range'],
-  );
-  $form['date_filter']['filter'] = array(
-    '#type' => 'submit',
-    '#value' => t('Filter'),
-  );
-  $form['date_filter']['reset'] = array(
-    '#type' => 'submit',
-    '#value' => t('Reset'),
-  );
-  $form['#validate'][] = 'cfdr_datefilter_form_validate';
-  $form['#submit'][] = 'cfdr_datefilter_form_submit';
-  
-  return $form;
+
 }
 
 function cfdr_datefilter_form_validate($form, &$form_state) {
-  //on reset, skip validation
-  if ($form_state['values']['op'] == t('Reset'))
-    return;
-  
-  $range = $form_state['values']['range'];
-  if (!empty($range) && !preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}\s--\s[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $range)) {
-    form_set_error('range', t('Please use the calendar popup or the following format: yyyy-mm-dd -- yyyy-mm-dd'));
-  }
-}
 
-function cfdr_datefilter_form_submit($form, &$form_state) {
-  if ($form_state['values']['op'] == t('Reset') || empty($form_state['values']['range'])) {
-    unset($_SESSION['cfds_filter']);
-    return;
-  }
-  //put in _session for form's default value
-  $_SESSION['cfds_filter']['range'] = $form_state['values']['range'];
-  $dates = explode(' -- ', $form_state['values']['range']);
-  $start = date_make_date($dates[0]);
-  $end = date_make_date($dates[1]);
-  if (!empty($start) && !empty($end)) {
-      //date_add is only for PHP >= 5.3  :( so no date_add($end, new DateInterval('PT23H59M59S'));
-      //therefore we do this ugly thing: 86399 seconds = one day - one second
-      $end = date_make_date(date_format($end, DATE_FORMAT_UNIX) + 86399, NULL, DATE_UNIX);
-      
-      $_SESSION['cfds_filter']['start'] = date_format($start, DATE_FORMAT_ISO);
-      $_SESSION['cfds_filter']['end'] = date_format($end, DATE_FORMAT_ISO);
-  }
 }
 
 /**
- * Returns the xml_file of the cfd node for download.
+ * Returns the xml file of the cfd node for download.
  * @param StdObject $node
  */
 function cfdr_download_xml($node) {
-  //based on file_transfer()
-  if (ob_get_level()) {
-    ob_end_clean();
-  }
-  $headers = array(
-    'Content-Description: File Transfer',
-    "Content-Disposition: attachment; filename=$node->title.xml",
-    'Content-type: text/xml',
-  );
-  foreach ($headers as $header) {
-    // To prevent HTTP header injection, we delete new lines that are
-    // not followed by a space or a tab.
-    // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
-    $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
-    drupal_set_header($header);
-  }
-  print $node->xml_file;
-  exit();
+
 }
 
 /**
@@ -443,58 +371,6 @@ function cfdr_rfc2uid($rfc) {
     return $result;
 }
 
-/**POSSIBLY DEPRECEATED but still useful query example
- * Updates field {cfd}.cliente_uid for all already registered clients who have
- * unassigned CFDs in the table.
- */
-function cfdr_update_cliente_uid() {
-  //updatables are CFDs of a client who is regisgtered and has available CFDs.
-  //The CFD must not yet be assigned to any users (thus cliente_uid = 1)
-  $updatables = db_query('SELECT {cfd}.nid, {cfd}.cliente_rfc FROM {users} INNER JOIN {cfd} ON {users}.name = {cfd}.cliente_rfc WHERE {cfd}.cliente_uid = 1');
-  while ($FE = db_fetch_array($updatables)) {
-    $uid = cfdr_rfc2uid($FE['cliente_rfc']);
-    db_query('UPDATE {cfd} SET cliente_uid = %d WHERE nid = %d', $uid, $FE['nid']);
-  }
-}
-
-/**
- * Implementation of hook_user().
- * On user add: assign CFDs to new user's RFC (if it is a valid RFC)
- */
-function cfdr_user($op, &$edit, &$account, $category = NULL) {
-  $rfc_regexp = '/^(([A-Z]){3,4})([0-9]{6})((([A-Z]|[0-9]){3}))$/';
-  switch ($op) {
-    case 'insert':
-      // if the username isn't an RFC we're not inetersted
-      if (@preg_match($rfc_regexp, $account->name)) {
-        db_query("UPDATE {cfd} SET cliente_uid = %d WHERE cliente_rfc = '%s'", $account->uid, $account->name);
-      }
-      break;
-    case 'update':
-    // the uid shouldn't change, but the name may, so...
-    // on 'update' the new value is in $edit
-    $new_name = $edit['name'];
-    $old_name = $account->name;
-    
-    // ...if name changed and changed into a valid RFC
-    if ($new_name != $old_name && @preg_match($rfc_regexp, $new_name)) {
-      drupal_set_message(t('Username (RFC) change'));
-      // de-assign any existing CFDs with the old username
-      db_query("UPDATE {cfd} SET cliente_uid = 1 WHERE cliente_rfc = '%s'", $old_name);
-      // assign any existing CFDs to the new name
-      db_query("UPDATE {cfd} SET cliente_uid = %d WHERE cliente_rfc = '%s'", $account->uid, $new_name);
-    }
-      
-      break;
-    case 'delete':
-      //assign back to admin user (uid 1)
-      if (@preg_match($rfc_regexp, $account->name)) {
-        db_query("UPDATE {cfd} SET cliente_uid = 1 WHERE cliente_rfc = '%s'", $account->name);
-      }
-      break;
-  }
-}
-
 /**
  * returns the links string to download this cfd node as xml or pdf by using l()
  * @return String link
@@ -504,62 +380,22 @@ function cfdr_get_dl_links($node_title, $node_nid) {
   return  l('PDF', "node/$node_nid/download/pdf/$node_title.pdf") . ' | ' . l('XML', "node/$node_nid/download/xml");
 }
 
-/**
- * Applies the cfdr_html.xsl transformation and outputs it as HTML
- **/
-function cfdr_view_html($node) {
-  $doc = new DOMDocument(); $doc->loadXML($node->xml_file);
-  //Header
-  $xsl_file = './' . drupal_get_path('module', 'cfd') . '/resources/cfdr_html.xsl';
-  $xsl_html = new DOMDocument(); $xsl_html->load($xsl_file);
-  $xsl = new XSLTProcessor(); $xsl->importStylesheet($xsl_html);
-  $html = $xsl->transformToXml($doc);
-  return $html;
-}
-
-/*******************************
- * Theme functions for hook_view()
- *******************************/
-
-function cfdr_theme() {
-  return array(
-    'cfdr_fields' => array(
-      'arguments' => array('node'),
-    ),
-    'cfdr_view_cfds' => array(
-      'arguments' => array('form' => NULL),
-    ),
-  );
-}
-
-function theme_cfdr_fields($node) {
-  $output = "<p><strong>RFC receptor: </strong>$node->cliente_rfc</p>";
-  $output .= "<p><strong>Fecha de la FE: </strong>$node->fecha_cfd</p>";
-  $output .= '<strong>' . t('Download') . ':</strong> ' . cfdr_get_dl_links($node->title, $node->nid);
-  return $output;
-}
-
 /*
  * Implementation of hook_cron().
- * Deletes generic RFC and old CFDs (older than 5 weeks)
  */
 function cfdr_cron() {
-  // generic RFC OR time() - 5 weeks
-  $result = db_query("SELECT {cfd}.nid FROM {cfd} WHERE cliente_rfc = 'XAXX010101000' OR fecha_cfd < '%s'", date(DATE_FORMAT_ISO, time() - 3024000));
-  $count = 0;
-  while ($cfd = db_fetch_array($result)) {
-    //do this instead of node_delte() as it is faster
-    db_query('DELETE FROM {node} WHERE nid = %d', $cfd['nid']);
-    db_query('DELETE FROM {node_revisions} WHERE nid = %d', $cfd['nid']);
-    db_query('DELETE FROM {cfd} WHERE nid = %d', $cfd['nid']);
-    
-    //Code from node_delete(); Remove this node from the search index if needed.
-    if (function_exists('search_wipe')) {
-      search_wipe($cfd['nid'], 'node');
+  cfdr_scan();
+}
+
+/**
+ * Scans for .xml cfds in configured directory and moves XML CFDs to another dir
+ **/
+function cfdr_scan() {
+  $scan_path = variable_get('cfdr_scan_path', 'sites/default/cfd');
+  $move_path = variable_get('cfdr_move_path', 'sites/default/cfd/scanned');
+  if ($files = file_scan_directory($scan_path, '.xml|.XML$', array('.', '..', 'CVS'), 0, FALSE)) {
+    foreach ($files as $file) {
+
     }
-    $count++;
-   // watchdog('content', 'F.E. @nid deleted by cron.', array('@nid' => $cfd['nid']));
   }
-  if ($count > 0) 
-    watchdog('cfd', '@num F.E.s deleted', array('@num' => $count));
 }
