@@ -19,5 +19,13 @@ function cfdr_admin_form() {
     '#description' => t('Must be different from <strong>Path where to look for .xml files</strong>'),
     '#default_value' => variable_get('cfdr_move_path', 'sites/default/cfd/scanned'),
   );
+  $form['#validate'][] = 'cfdr_admin_form_validate';
   return system_settings_form($form);
+}
+
+function cfdr_admin_form_validate($form, &$form_state) {
+  if ($form_state['values']['op'] != t('Reset to defaults')) {
+    file_check_directory($form_state['values']['cfdr_move_path'], FALSE, 'cfdr_move_path');
+    file_check_directory($form_state['values']['cfdr_scan_path'], FALSE, 'cfdr_scan_path');
+  }
 }
