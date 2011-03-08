@@ -1,5 +1,5 @@
 name = CFD - Reception
-description = Add CFD as a node content type for collection (received CFDs)
+description = Add CFD as content for collection (received CFDs).
 core = 6.x
 dependencies[] = cfd
 dependencies[] = date_api

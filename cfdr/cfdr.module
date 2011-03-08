@@ -4,63 +4,45 @@
  */
 
 /**
- * Implementation of hook_node_info().
- */
-function cfdr_node_info() {
-  return array(
-    'cfdr' => array(
-      'name' => 'Received CFD',
-      'module' => 'cfdr',
-      'description' => t("Provides content type support for Mexican CFDs which have been received"),
-      'has_title' => TRUE,
-      'title_label' => t('FE #'),
-      'has_body' => FALSE,
-      'locked' => TRUE,
-    ),
-  );
-}
-
-/**
  * Implementation of hook_menu().
  */
 function cfdr_menu() {
   $menu = array();
-  $menu['node/%node/download/pdf'] = array(
-    'type' => MENU_CALLBACK,
-    'title' => 'Download',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
-    'page callback' => 'cfd_download_pdf',
-    'page arguments' => array(1),
-    'file' => './cfd.pdf.inc'
-  );
-  $menu['node/%node/download/xml'] = array(
-    'type' => MENU_CALLBACK,
-    'title' => 'Download',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
-    'page callback' => 'cfdr_download_xml',
-    'page arguments' => array(1),
-  );
-  $menu['node/%node/html'] = array(
-    'type' => MENU_CALLBACK,
-    'title' => 'HTML View',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
-    'page callback' => 'cfdr_view_html',
-    'page arguments' => array(1),
-  );
-  // MUST RENAME
   $menu['cfdr'] = array(
-    'title' => 'View Facturas Electronicas',
+    'title' => 'View CFDs',
+    'description' => 'View all CFDs',
     'access callback' => 'user_access',
-    'access arguments' => array('view assigned FEs'),
+    'access arguments' => array('view any FEs'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfdr_view_cfds'),
   );
+  $menu['cfdr/%/pdf'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Download',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
+    'page callback' => 'cfdr_download_pdf',
+    'page arguments' => array(1),
+  );
+  $menu['cfdr/%/xml'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Download',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
+    'page callback' => 'cfdr_download_xml',
+    'page arguments' => array(1),
+  );
+  $menu['cfdr/%cfdr'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'View CFD',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
+    'page callback' => 'cfdr_view_html',
+    'page arguments' => array(1),
+  );
   //Admin menu
   $menu['admin/settings/cfdr'] = array(
-    'title' => 'CFD - Received',
+    'title' => 'CFD - Received Settings',
     'description' => 'Configure CFD - Received options',
     'access callback' => 'user_access',
     'access arguments' => array('administer cfdr'),
@@ -72,174 +54,98 @@ function cfdr_menu() {
 }
 
 /**
+ * Implementation of hook_theme()
+ **/
+function cfdr_theme() {
+  return array(
+    'cfdr_view_cfds' => array(
+      'arguments' => array('form' => NULL),
+    ),
+  );
+}
+
+/**
  * Implementation of hook_perm().
  */
 function cfdr_perm() {
-  return array('administer cfdr');
-}
-
-
-/**
- * Implementation of hook_access().
- * Enforces permissions described by hook_perm() for node type cfdr
- * @return boolean true if access granted.
- */
-function cfdr_access($op, $node, $account = NULL) {
-  global $user;
-  if (!isset($account))
-    $account = $user;
-  
-  switch ($op) {
-    case 'view':
-      return TRUE;
-
-    case 'create':
-      return TRUE;
-
-    case 'delete':
-      return TRUE;
-
-    case 'update':
-      return FALSE;
-  }
+  return array('administer cfdr', 'view any CFD');
 }
 
 /**
- * Alter node/add/cfdr form into beign useless
- */
-function cfdr_form_cfdr_node_form_alter(&$form, &$form_state) {
-  // disable basically everything
-  $form['revision_information']['#access'] = FALSE;
-  $form['author']['#access'] = FALSE;
-  $form['options']['#access'] = FALSE;
-  $form['buttons']['#access'] = FALSE;
-}
-
-
-
-/**
- * Implementation of hook_validate();
- *
- */
-function cfdr_validate($node, &$form) {
-
+ * Saves a fully loaded cfdr object to {cfdr}
+ **/
+function cfdr_save(&$cfdr) {
+  drupal_write_record('cfdr', $cfdr);
 }
 
 /**
- * 
- * @param StdObject $node (by reference)
- */
-function cfdr_autofill_fields(&$node) {
+ * Loads then inserts a CFD into de database.
+ * @param string $cfdr_filename the full path and name of the CFD's .xml file
+ **/
+function cfdr_insert($filename) {
   //parse XML file read (with xml DOM(simpleXML sucks at namespaces))
   $doc = new DOMDocument();
-  $doc->loadXML($node->xml_file);
+  @$doc->load($filename, LIBXML_NOWARNING);
   $xpath = new DOMXPath($doc);
   $xpath->registerNamespace('cfd', 'http://www.sat.gob.mx/cfd/2');
   $serie = $xpath->query('/cfd:Comprobante/@serie');
   $folio = $xpath->query('/cfd:Comprobante/@folio');
+  $receptor_rfc = $xpath->query('/cfd:Comprobante/cfd:Receptor/@rfc');
+  $emisor_rfc = $xpath->query('/cfd:Comprobante/cfd:Emisor/@rfc');
   $fecha_cfd = $xpath->query('/cfd:Comprobante/@fecha');
-  $cliente_rfc = $xpath->query('/cfd:Comprobante/cfd:Receptor/@rfc');
-  //now save into the node (->item(0) for first match)
-  $node->fecha_cfd = $fecha_cfd->item(0)->value;
-  $node->cliente_rfc = $cliente_rfc->item(0)->value;
-  $node->title = $serie->item(0)->value . $folio->item(0)->value;
+
+  $cfdr = new stdClass();
+  $cfdr->serie = $serie->item(0)->value;
+  $cfdr->folio = $folio->item(0)->value;
+  $cfdr->receptor_rfc = $receptor_rfc->item(0)->value;
+  $cfdr->emisor_rfc = $emisor_rfc->item(0)->value;
+  $cfdr->fecha_cfd = $fecha_cfd->item(0)->value;
+  $cfdr->xml_filename = $filename;
+
+  cfdr_save($cfdr);
 }
 
 /**
- * Implementation of hook_instert().
+ * Loads a cfdr object and returns it
+ * @param int $cfdr_id Id of the CFD to retreive
+ * @return stdObject a loaded node-like object.
  */
-function cfdr_insert($node) {
-  cfdr_autofill_fields($node);
-  
-  
-  //if $node->cliente_rfc matches a username, set $node->cliente_uid to that user
-  $node->cliente_uid = cfdr_rfc2uid($node->cliente_rfc);
-  
-  //for updating title
-  $change_node = array(
-    'nid' => $node->nid,
-    'vid' => $node->vid,
-    'title' => $node->title,
-  );
-  
-  //make sure generic RFC they are not publised
-  if ($node->cliente_rfc == 'XAXX010101000') {
-    $change_node['status'] = 0;
-  }
-  
-  drupal_write_record('cfd', $node);
-  drupal_write_record('node', $change_node, 'nid');
-  drupal_write_record('node_revisions', $change_node , 'vid');
+function cfdr_load($cfdr_id) {
+  return db_fetch_object(db_query('SELECT * FROM {cfdr} WHERE cfdr_id = %d', $cfdr_id));
 }
 
 /**
- * Implementation of hook_update().
+ * Returns the filename of a CFD
+ * @param int $cfdr_id Id of the CFD to retreive
  */
-function cfdr_update($node) {
-  //revisions are disabled on the form
-  if ($node->revision) {
-    cfdr_instert($node);
-  }
-  else {
-    //do nothing
-  }
-}
-
-/**
- * Implementation of hook_delete().
- */
-function cfdr_delete(&$node) {
-  db_query('DELETE FROM {cfd} WHERE nid = %d', $node->nid);
-}
-
-/**
- * Implementation of hook_load().
- */
-function cfdr_load($node) {
-  return db_fetch_object(db_query('SELECT * FROM {cfd} WHERE nid = %d AND vid = %d', $node->nid, $node->vid));
-}
-
-/**
- * Implementation of hook_view().
- */
-function cfdr_view($node, $teaser = FALSE, $page = FALSE) {
-//  return node_prepare($node, $teaser);
-  if (!$teaser) {
-    $node = node_prepare($node, $teaser);
-    //add the other elements
-    $node->content['cfdr_fields'] = array(
-      '#value' => theme('cfdr_fields', $node),
-      '#weight' => 4,
-    );
-  }
-  else {
-    $node = node_prepare($node, $teaser);
-  }
-  drupal_set_title(t('FE-@title', array('@title' => $node->title)));
-  return $node;
+function cfdr_load_filename($cfdr_id) {
+  return db_result(db_query('SELECT xml_filename FROM {cfdr} WHERE cfdr_id = %d', $cfdr_id));
 }
 
 function theme_cfdr_view_cfds($form) {
   //based on theme_node_admin_nodes() in core - node.admin.inc
   // If there are rows in this form, then $form['title'] contains a list of
   // the title form elements.
-  $has_posts = isset($form['list']['title']) && is_array($form['list']['title']);
-  $header = array(t('FE #'), t('Date'), t('Download'));
+  $has_posts = isset($form['list']['serie']) && is_array($form['list']['serie']);
+  $header = array('Serie', 'Folio', t('Emisor'), t('Date'), t('Receptor'), t('Download'));
 
   $output = '';
 
   $output .= drupal_render($form['date_filter']);
   if ($has_posts) {
-    foreach (element_children($form['list']['title']) as $key) {
+    foreach (element_children($form['list']['serie']) as $key) {
       $row = array();
-      $row[] = drupal_render($form['list']['title'][$key]);
+      $row[] = drupal_render($form['list']['serie'][$key]);
+      $row[] = drupal_render($form['list']['folio'][$key]);
+      $row[] = drupal_render($form['list']['emisor_rfc'][$key]);
       $row[] = drupal_render($form['list']['date'][$key]);
+      $row[] = drupal_render($form['list']['receptor_rfc'][$key]);
       $row[] = drupal_render($form['list']['links'][$key]);
       $rows[] = $row;
     }
   }
   else {
-    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '3'));
+    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '6'));
   }
 
   $output .= theme('table', $header, $rows);
@@ -252,30 +158,22 @@ function theme_cfdr_view_cfds($form) {
   return $output;
 }
 
+/**
+ * 'cfdr' menu entry callback
+ **/
 function cfdr_view_cfds() {
-  global $user;
-  $form = cfdr_datefilter_form();
-  
-  // construct and execute the query
-  $basic_query = 'SELECT {cfd}.nid, {cfd}.fecha_cfd, {node}.title FROM {cfd} INNER JOIN {node} ON {cfd}.vid = {node}.vid WHERE {node}.status = 1';
-  if ($user->uid != 1)
-    $basic_query .= " AND {cfd}.cliente_uid = $user->uid";
-  
-  if (isset($_SESSION['cfds_filter'])) {
-    $start = $_SESSION['cfds_filter']['start'];
-    $end = $_SESSION['cfds_filter']['end'];
-    $basic_query .= " AND {cfd}.fecha_cfd >= '$start' AND {cfd}.fecha_cfd <= '$end'";
-  }
-  $results = pager_query($basic_query . ' ORDER BY {cfd}.fecha_cfd ASC', 10);
-  
+  $results = pager_query('SELECT * FROM {cfdr}', 30);
   // construct the list
   $list = array();
   while ($cfd = db_fetch_object($results)) {
-    $list['title'][$cfd->nid] = array('#value' => l($cfd->title, "node/$cfd->nid"));
-    $list['date'][$cfd->nid] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'short'));
-    $list['links'][$cfd->nid] = array('#value' => cfdr_get_dl_links($cfd->title, $cfd->nid));
+    $list['serie'][$cfd->cfdr_id] = array('#value' => $cfd->serie);
+    $list['folio'][$cfd->cfdr_id] = array('#value' => $cfd->folio);
+    $list['emisor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->emisor_rfc);
+    $list['date'][$cfd->cfdr_id] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'medium'));
+    $list['receptor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->receptor_rfc);
+    $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links(basename($cfd->xml_filename), $cfd->cfdr_id));
   }
-  $list['pager'] = array('#value' => theme('pager', NULL, 10, 0));
+  $list['pager'] = array('#value' => theme('pager', NULL, 30, 0));
   $form['list'] = $list;
   $form['#theme'] = 'cfdr_view_cfds';
 
@@ -283,47 +181,65 @@ function cfdr_view_cfds() {
 }
 
 /**
- * 
- */
-function cfdr_datefilter_form() {
-
-}
-
-function cfdr_datefilter_form_validate($form, &$form_state) {
-
-}
-
-/**
  * Returns the xml file of the cfd node for download.
  * @param StdObject $node
  */
-function cfdr_download_xml($node) {
+function cfdr_download_xml($cfdr_id) {
+ $filename = cfdr_load_filename($cfdr_id);
+ $basename = basename($filename);
+ $headers = array(
+   'Content-Description: File Transfer',
+   "Content-Disposition: attachment; filename=$basename",
+   'Content-type: text/xml',
+ );
+ // Code based on file_transfer() but modified to serve files outside the
+ // drupal file system
+ if (ob_get_level()) {
+   ob_end_clean();
+ }
 
+ foreach ($headers as $header) {
+   // To prevent HTTP header injection, we delete new lines that are
+   // not followed by a space or a tab.
+   // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+   $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
+   drupal_set_header($header);
+ }
+
+ // Transfer file in 1024 byte chunks to save memory usage.
+ if ($fd = fopen($filename, 'rb')) {
+   while (!feof($fd)) {
+     print fread($fd, 1024);
+   }
+   fclose($fd);
+ }
+ else {
+   drupal_not_found();
+ }
+ exit();
 }
 
 /**
- * looks for the RFC as username in the {users} table.
- * @param string $rfc
- *   Looks for this username
- * @return
- *   UID of the corresponing RFC/username. IF not found returns 1.
+ * Gets the out of the node and gets the PDF from cfd_make_pdf() then
+ * sends it to the browser.
+ * @param StdObject $node
  */
-function cfdr_rfc2uid($rfc) {
-  $result = db_result(db_query("SELECT uid FROM {users} WHERE name='%s'", $rfc));
-  //if no user matches, return admin user
-  if (!$result)
-    return 1;
-  else
-    return $result;
+function cfdr_download_pdf($cfdr_id) {
+  //generate PDF
+  $pdf = cfd_make_pdf(cfdr_load_filename($cfdr_id));
+  //send generated file to browser
+  $pdf->SetTitle($node->title);
+  $pdf->SetDisplayMode('fullpage');
+  $pdf->Output("$node->title.pdf");
 }
 
 /**
  * returns the links string to download this cfd node as xml or pdf by using l()
  * @return String link
  */
-function cfdr_get_dl_links($node_title, $node_nid) {
+function cfdr_get_dl_links($basename, $cfrd_id) {
   // add $node_title.pdf to PDF dl path so Adobe Reader gets that as a filename
-  return  l('PDF', "node/$node_nid/download/pdf/$node_title.pdf") . ' | ' . l('XML', "node/$node_nid/download/xml");
+  return  l('PDF', "cfdr/$cfrd_id/pdf/$basename.pdf") . ' | ' . l('XML', "cfdr/$cfrd_id/xml");
 }
 
 /*
@@ -340,8 +256,16 @@ function cfdr_scan() {
   $scan_path = variable_get('cfdr_scan_path', 'sites/default/cfd');
   $move_path = variable_get('cfdr_move_path', 'sites/default/cfd/scanned');
   if ($files = file_scan_directory($scan_path, '.xml|.XML$', array('.', '..', 'CVS'), 0, FALSE)) {
+    $count = 0;
     foreach ($files as $file) {
-
+      $new_filename = $move_path . '/' . $file->basename;
+      // move to $move_path
+      if (rename($file->filename, $new_filename)) {
+        // add entry to {cfdr} form .xml file
+        cfdr_insert($new_filename);
+        $count++;
+      }
     }
   }
+  watchdog('cfdr', '@count files imported succesfully', array('@count' => $count), WATCHDOG_NOTICE);
 }
