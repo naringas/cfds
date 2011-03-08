@@ -13,8 +13,8 @@ function cfdr_menu() {
     'description' => 'View all CFDs',
     'access callback' => 'user_access',
     'access arguments' => array('view any FEs'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('cfdr_view_cfds'),
+    'page callback' => 'cfdr_view_cfds',
+    // 'page arguments' => array('cfdr_view_cfds'),
   );
   $menu['cfdr/%/pdf'] = array(
     'type' => MENU_CALLBACK,
@@ -165,25 +165,35 @@ function theme_cfdr_view_cfds($form) {
  * 'cfdr' menu entry callback
  **/
 function cfdr_view_cfds() {
-  $results = pager_query('SELECT * FROM {cfdr}', 30);
-  // construct the list
-  $list = array();
+  $header = array(
+    array('data' => 'Serie', 'field' => 'serie'),
+    array('data' => 'Folio', 'field' => 'folio'),
+    array('data' => t('Emisor'), 'field' => 'emisor_rfc'),
+    array('data' => t('Date'), 'field' => 'fecha_cfd', 'sort' => 'desc'),
+    array('data' => t('Receptor'), 'field' => 'receptor_rfc'),
+    array('data' => '$', 'field' => 'importe'),
+    array('data' => t('Download')),
+  );
+
+  $results = pager_query('SELECT * FROM {cfdr}' . tablesort_sql($header), 30);
+
   while ($cfd = db_fetch_object($results)) {
-    $list['serie'][$cfd->cfdr_id] = array('#value' => $cfd->serie);
-    $list['folio'][$cfd->cfdr_id] = array('#value' => $cfd->folio);
-    $list['emisor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->emisor_rfc);
-    $list['date'][$cfd->cfdr_id] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'medium'));
-    $list['receptor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->receptor_rfc);
-    $list['importe'][$cfd->cfdr_id] = array('#value' => $cfd->importe);
     $basename = basename($cfd->xml_filename);
     $name = substr($basename, 0, strrpos($basename, '.'));
-    $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links($name, $cfd->cfdr_id));
+    $rows[] = array(
+      array('data' => $cfd->serie),
+      array('data' => $cfd->folio),
+      array('data' => $cfd->emisor_rfc),
+      array('data' => date_format_date(date_make_date($cfd->fecha_cfd), 'short')),
+      array('data' => $cfd->receptor_rfc),
+      array('data' => $cfd->importe),
+      array('data' => cfdr_get_dl_links($name, $cfd->cfdr_id)),
+    );
   }
-  $list['pager'] = array('#value' => theme('pager', NULL, 30, 0));
-  $form['list'] = $list;
-  $form['#theme'] = 'cfdr_view_cfds';
+  if (empty($rows))
+    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '7'));
 
-  return $form;
+  return theme('table', $header, $rows) . theme('pager', NULL, 30, 0);
 }
 
 /**
