@@ -54,7 +54,7 @@ function cfde_menu() {
   $menu['cfds'] = array(
     'title' => 'View Facturas Electronicas',
     'access callback' => 'user_access',
-    'access arguments' => array('view assigned FEs'),
+    'access arguments' => array('view assigned CFDs'),
 //    'page callback' => 'cfde_page_view',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfde_view_cfds'),
@@ -63,7 +63,7 @@ function cfde_menu() {
     'title' => 'Import CFDs',
     'description' => 'Import CFDs from a compressed file.',
     'access callback' => 'user_access',
-    'access arguments' => array('create FEs'),
+    'access arguments' => array('create CFDs'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfde_import_form'),
     'file' => './cfde.import.inc',
@@ -621,7 +621,7 @@ function cfde_user($op, &$edit, &$account, $category = NULL) {
       }
       break;
     case 'form':
-      if ($category == 'account' && module_exists('rules') && user_access('view assigned FEs', $account)) {
+      if ($category == 'account' && module_exists('rules') && user_access('view assigned CFDs', $account)) {
         $rules = rules_get_configured_items();
         if ($rules['rules_cfde_mail_notification']['#active']) {
           $form = array();
