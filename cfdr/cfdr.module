@@ -16,28 +16,27 @@ function cfdr_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfdr_view_cfds'),
   );
-  $menu['cfdr/%cfdr/pdf'] = array(
+  $menu['cfdr/%/pdf'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Download',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
     'page callback' => 'cfdr_download_pdf',
     'page arguments' => array(1),
-    'file' => './cfd.pdf.inc'
   );
-  $menu['cfdr/%cfdr/xml'] = array(
+  $menu['cfdr/%/xml'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'Download',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
     'page callback' => 'cfdr_download_xml',
     'page arguments' => array(1),
   );
-  $menu['cfdr/%cfdr/html'] = array(
+  $menu['cfdr/%cfdr'] = array(
     'type' => MENU_CALLBACK,
-    'title' => 'HTML View',
-    'access callback' => 'cfdr_access',
-    'access arguments' => array('view', 1),
+    'title' => 'View CFD',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
     'page callback' => 'cfdr_view_html',
     'page arguments' => array(1),
   );
@@ -55,17 +54,21 @@ function cfdr_menu() {
 }
 
 /**
+ * Implementation of hook_theme()
+ **/
+function cfdr_theme() {
+  return array(
+    'cfdr_view_cfds' => array(
+      'arguments' => array('form' => NULL),
+    ),
+  );
+}
+
+/**
  * Implementation of hook_perm().
  */
 function cfdr_perm() {
   return array('administer cfdr', 'view any CFD');
-}
-
-/**
- * 
- * @param StdObject $node (by reference)
- */
-function cfdr_autofill_fields(&$cfdr) {
 }
 
 /**
@@ -102,31 +105,47 @@ function cfdr_insert($filename) {
   cfdr_save($cfdr);
 }
 
+/**
+ * Loads a cfdr object and returns it
+ * @param int $cfdr_id Id of the CFD to retreive
+ * @return stdObject a loaded node-like object.
+ */
 function cfdr_load($cfdr_id) {
   return db_fetch_object(db_query('SELECT * FROM {cfdr} WHERE cfdr_id = %d', $cfdr_id));
+}
+
+/**
+ * Returns the filename of a CFD
+ * @param int $cfdr_id Id of the CFD to retreive
+ */
+function cfdr_load_filename($cfdr_id) {
+  return db_result(db_query('SELECT xml_filename FROM {cfdr} WHERE cfdr_id = %d', $cfdr_id));
 }
 
 function theme_cfdr_view_cfds($form) {
   //based on theme_node_admin_nodes() in core - node.admin.inc
   // If there are rows in this form, then $form['title'] contains a list of
   // the title form elements.
-  $has_posts = isset($form['list']['title']) && is_array($form['list']['title']);
-  $header = array(t('FE #'), t('Date'), t('Download'));
+  $has_posts = isset($form['list']['serie']) && is_array($form['list']['serie']);
+  $header = array('Serie', 'Folio', t('Emisor'), t('Date'), t('Receptor'), t('Download'));
 
   $output = '';
 
   $output .= drupal_render($form['date_filter']);
   if ($has_posts) {
-    foreach (element_children($form['list']['title']) as $key) {
+    foreach (element_children($form['list']['serie']) as $key) {
       $row = array();
-      $row[] = drupal_render($form['list']['title'][$key]);
+      $row[] = drupal_render($form['list']['serie'][$key]);
+      $row[] = drupal_render($form['list']['folio'][$key]);
+      $row[] = drupal_render($form['list']['emisor_rfc'][$key]);
       $row[] = drupal_render($form['list']['date'][$key]);
+      $row[] = drupal_render($form['list']['receptor_rfc'][$key]);
       $row[] = drupal_render($form['list']['links'][$key]);
       $rows[] = $row;
     }
   }
   else {
-    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '3'));
+    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '6'));
   }
 
   $output .= theme('table', $header, $rows);
@@ -140,27 +159,87 @@ function theme_cfdr_view_cfds($form) {
 }
 
 /**
- * 'cfds/' menu entry callback
+ * 'cfdr' menu entry callback
  **/
 function cfdr_view_cfds() {
+  $results = pager_query('SELECT * FROM {cfdr}', 30);
+  // construct the list
+  $list = array();
+  while ($cfd = db_fetch_object($results)) {
+    $list['serie'][$cfd->cfdr_id] = array('#value' => $cfd->serie);
+    $list['folio'][$cfd->cfdr_id] = array('#value' => $cfd->folio);
+    $list['emisor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->emisor_rfc);
+    $list['date'][$cfd->cfdr_id] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'medium'));
+    $list['receptor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->receptor_rfc);
+    $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links(basename($cfd->xml_filename), $cfd->cfdr_id));
+  }
+  $list['pager'] = array('#value' => theme('pager', NULL, 30, 0));
+  $form['list'] = $list;
+  $form['#theme'] = 'cfdr_view_cfds';
 
+  return $form;
 }
 
 /**
  * Returns the xml file of the cfd node for download.
  * @param StdObject $node
  */
-function cfdr_download_xml($node) {
+function cfdr_download_xml($cfdr_id) {
+ $filename = cfdr_load_filename($cfdr_id);
+ $basename = basename($filename);
+ $headers = array(
+   'Content-Description: File Transfer',
+   "Content-Disposition: attachment; filename=$basename",
+   'Content-type: text/xml',
+ );
+ // Code based on file_transfer() but modified to serve files outside the
+ // drupal file system
+ if (ob_get_level()) {
+   ob_end_clean();
+ }
 
+ foreach ($headers as $header) {
+   // To prevent HTTP header injection, we delete new lines that are
+   // not followed by a space or a tab.
+   // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+   $header = preg_replace('/\r?\n(?!\t| )/', '', $header);
+   drupal_set_header($header);
+ }
+
+ // Transfer file in 1024 byte chunks to save memory usage.
+ if ($fd = fopen($filename, 'rb')) {
+   while (!feof($fd)) {
+     print fread($fd, 1024);
+   }
+   fclose($fd);
+ }
+ else {
+   drupal_not_found();
+ }
+ exit();
+}
+
+/**
+ * Gets the out of the node and gets the PDF from cfd_make_pdf() then
+ * sends it to the browser.
+ * @param StdObject $node
+ */
+function cfdr_download_pdf($cfdr_id) {
+  //generate PDF
+  $pdf = cfd_make_pdf(cfdr_load_filename($cfdr_id));
+  //send generated file to browser
+  $pdf->SetTitle($node->title);
+  $pdf->SetDisplayMode('fullpage');
+  $pdf->Output("$node->title.pdf");
 }
 
 /**
  * returns the links string to download this cfd node as xml or pdf by using l()
  * @return String link
  */
-function cfdr_get_dl_links($node_title, $node_nid) {
+function cfdr_get_dl_links($basename, $cfrd_id) {
   // add $node_title.pdf to PDF dl path so Adobe Reader gets that as a filename
-  return  l('PDF', "node/$node_nid/download/pdf/$node_title.pdf") . ' | ' . l('XML', "node/$node_nid/download/xml");
+  return  l('PDF', "cfdr/$cfrd_id/pdf/$basename.pdf") . ' | ' . l('XML', "cfdr/$cfrd_id/xml");
 }
 
 /*
