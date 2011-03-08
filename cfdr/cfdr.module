@@ -171,7 +171,9 @@ function cfdr_view_cfds() {
     $list['emisor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->emisor_rfc);
     $list['date'][$cfd->cfdr_id] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'medium'));
     $list['receptor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->receptor_rfc);
-    $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links(basename($cfd->xml_filename), $cfd->cfdr_id));
+    $basename = basename($cfd->xml_filename);
+    $name = substr($basename, 0, strrpos($basename, '.'));
+    $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links($name, $cfd->cfdr_id));
   }
   $list['pager'] = array('#value' => theme('pager', NULL, 30, 0));
   $form['list'] = $list;
@@ -237,9 +239,9 @@ function cfdr_download_pdf($cfdr_id) {
  * returns the links string to download this cfd node as xml or pdf by using l()
  * @return String link
  */
-function cfdr_get_dl_links($basename, $cfrd_id) {
+function cfdr_get_dl_links($name, $cfrd_id) {
   // add $node_title.pdf to PDF dl path so Adobe Reader gets that as a filename
-  return  l('PDF', "cfdr/$cfrd_id/pdf/$basename.pdf") . ' | ' . l('XML', "cfdr/$cfrd_id/xml");
+  return  l('PDF', "cfdr/$cfrd_id/pdf/$name.pdf") . ' | ' . l('XML', "cfdr/$cfrd_id/xml");
 }
 
 /*
