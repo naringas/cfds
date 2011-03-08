@@ -9,14 +9,19 @@
  * one for header, one for content and also uses SAT provided file: cadenaoriginal_2_0.xslt
  * Uses FEpdf class to define the header and footer (located in reources/FEpdf.php)
  * Custom code to word-wrap the 'cadena original' using | instead of spaces.
- * @param string $xml_string The xml string of the XML FE to convert to PDF
+ * @param mixed $xml The xml string or .xml file of the CFD to convert to PDF
  * @return a TCPDF object of the converted CFD
  **/
-function cfd_make_pdf($xml_string) {
+function cfd_make_pdf($xml) {
   require_once libraries_get_path('tcpdf') . '/tcpdf.php';
   require_once drupal_get_path('module', 'cfd') . '/resources/FEpdf.php';
   //Apply XSLT
-  $doc = new DOMDocument(); $doc->loadXML($xml_string);
+  $doc = new DOMDocument();
+  //load xml data string or filename
+  if (is_file($xml))
+    $doc->load($xml, LIBXML_NOWARNING);
+  else
+    $doc->loadXML($xml);
   //Header
   $xsl_header_file = drupal_get_path('module', 'cfd') . '/resources/cfd_header.xsl';
   $xsl_header = new DOMDocument(); $xsl_header->load($xsl_header_file);
