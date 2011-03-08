@@ -62,6 +62,14 @@ function cfdr_schema() {
         'not null' => FALSE,
         'description' => t('Date of the CFD'),
       ),
+      'importe' => array(
+        'type' => 'numeric',
+        'precision' => 9,
+        'scale' => 2,
+        'unsigned' => FALSE,
+        'not null' => FALSE,
+        'description' => t('Total amount of the CFD'),
+      ),
       'xml_filename' => array(
         'type' => 'varchar',
         'length' => '510',

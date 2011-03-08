@@ -93,6 +93,7 @@ function cfdr_insert($filename) {
   $receptor_rfc = $xpath->query('/cfd:Comprobante/cfd:Receptor/@rfc');
   $emisor_rfc = $xpath->query('/cfd:Comprobante/cfd:Emisor/@rfc');
   $fecha_cfd = $xpath->query('/cfd:Comprobante/@fecha');
+  $importe = $xpath->query('/cfd:Comprobante/@total');
 
   $cfdr = new stdClass();
   $cfdr->serie = $serie->item(0)->value;
@@ -100,6 +101,7 @@ function cfdr_insert($filename) {
   $cfdr->receptor_rfc = $receptor_rfc->item(0)->value;
   $cfdr->emisor_rfc = $emisor_rfc->item(0)->value;
   $cfdr->fecha_cfd = $fecha_cfd->item(0)->value;
+  $cfdr->importe = $importe->item(0)->value;
   $cfdr->xml_filename = $filename;
 
   cfdr_save($cfdr);
@@ -127,7 +129,7 @@ function theme_cfdr_view_cfds($form) {
   // If there are rows in this form, then $form['title'] contains a list of
   // the title form elements.
   $has_posts = isset($form['list']['serie']) && is_array($form['list']['serie']);
-  $header = array('Serie', 'Folio', t('Emisor'), t('Date'), t('Receptor'), t('Download'));
+  $header = array('Serie', 'Folio', t('Emisor'), t('Date'), t('Receptor'), '$', t('Download'));
 
   $output = '';
 
@@ -140,12 +142,13 @@ function theme_cfdr_view_cfds($form) {
       $row[] = drupal_render($form['list']['emisor_rfc'][$key]);
       $row[] = drupal_render($form['list']['date'][$key]);
       $row[] = drupal_render($form['list']['receptor_rfc'][$key]);
+      $row[] = drupal_render($form['list']['importe'][$key]);
       $row[] = drupal_render($form['list']['links'][$key]);
       $rows[] = $row;
     }
   }
   else {
-    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '6'));
+    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '7'));
   }
 
   $output .= theme('table', $header, $rows);
@@ -171,6 +174,7 @@ function cfdr_view_cfds() {
     $list['emisor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->emisor_rfc);
     $list['date'][$cfd->cfdr_id] = array('#value' => date_format_date(date_make_date($cfd->fecha_cfd), 'medium'));
     $list['receptor_rfc'][$cfd->cfdr_id] = array('#value' => $cfd->receptor_rfc);
+    $list['importe'][$cfd->cfdr_id] = array('#value' => $cfd->importe);
     $basename = basename($cfd->xml_filename);
     $name = substr($basename, 0, strrpos($basename, '.'));
     $list['links'][$cfd->cfdr_id] = array('#value' => cfdr_get_dl_links($name, $cfd->cfdr_id));
