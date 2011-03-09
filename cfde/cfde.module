@@ -702,7 +702,7 @@ function cfde_purge() {
   // make sure that if cfde_expire_time is 0, expiration is 0
   $now_time = time();
   $expiration = $now_time - ($expire_time == 0 ? $now_time : $expire_time);
-  $result = db_query("SELECT {cfde}.nid FROM {cfde}, {node} WHERE {cfde}.cliente_rfc = '%s' OR {node}.created <= %d GROUP BY {cfde}.nid", CFD_RFC_GENERIC, $expiration);
+  $result = db_query("SELECT {cfde}.nid FROM {cfde} LEFT JOIN {node} ON {cfde}.nid = {node}.nid WHERE {cfde}.cliente_rfc = '%s' OR {node}.created <= %d GROUP BY {cfde}.nid", CFD_RFC_GENERIC, $expiration);
   $count = 0;
   while ($cfd = db_fetch_array($result)) {
     // do this instead of node_delete() as it is faster?
