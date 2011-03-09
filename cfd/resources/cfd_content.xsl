@@ -75,7 +75,7 @@
       <tr>
         <td class="l" colspan="2">
           <strong>Sello</strong><br/>
-          <xsl:value-of select="@sello"/><br/>
+          <span style="font-size: 8pt"><xsl:value-of select="@sello"/></span><br/>
         </td>
       </tr>
     </table>

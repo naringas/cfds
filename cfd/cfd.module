@@ -45,10 +45,10 @@ function cfd_make_pdf($xml) {
   $pdf->headerHTML($html_header);
   $pdf->AddPage();
 
-  $pdf->writeHTML($html_content);
+  $pdf->writeHTML($html_content.'<br />');
 
   //Cadena Original with word wrapping in |
-  $pdf->SetY($pdf->getY() - 10);
+  $pdf->SetY($pdf->getY() - 7);
   $pdf->SetFontSize(10);
   $pdf->writeHTML('<strong>Cadena Original</strong>');
   $pdf->SetFontSize(8);
