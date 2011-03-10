@@ -391,7 +391,7 @@ function cfde_view_cfds() {
   
   // construct and execute the query
   $basic_query = 'SELECT {cfde}.nid, {cfde}.fecha_cfd, {node}.title FROM {cfde} INNER JOIN {node} ON {cfde}.vid = {node}.vid WHERE {node}.status = 1';
-  if ($user->uid != 1)
+  if (!user_access('view any CFD'))
     $basic_query .= " AND {cfde}.cliente_uid = $user->uid";
   
   if (isset($_SESSION['cfds_filter'])) {
