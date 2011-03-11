@@ -35,7 +35,7 @@ function cfde_action_mail_assigned_user($node, $settings) {
   // if user isn't admin or anonymous then
   if ($nid > 1) {
     $user = user_load($nid);
-    if (user_access('view assigned FEs', $user) && $user->status == 1 && $user->cfde_mail_notify) {
+    if (user_access('view assigned CFDs', $user) && $user->status == 1 && $user->cfde_mail_notify) {
       //mimemail alpha7 doesn't yet support attachements as content
       // module_load_include('inc', 'cfde', 'cfd.pdf');
       // $pdf = cfd_make_pdf($node->xml_file);
