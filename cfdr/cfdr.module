@@ -58,7 +58,11 @@ function cfdr_menu() {
  **/
 function cfdr_theme() {
   return array(
+    // may be removed
     'cfdr_view_cfds' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'cfdr_filters_fieldset' => array(
       'arguments' => array('form' => NULL),
     ),
   );
@@ -172,11 +176,34 @@ function cfdr_view_cfds() {
     array('data' => t('Date'), 'field' => 'fecha_cfd', 'sort' => 'desc'),
     array('data' => t('Receptor'), 'field' => 'receptor_rfc'),
     array('data' => '$', 'field' => 'importe'),
-    array('data' => t('Download')),
+    t('Download'),
   );
+  $query = 'SELECT * FROM {cfdr}';
+  $filters = $_SESSION['cfdr_filters'];
+  if (isset($filters)) {
+    $join .= ' WHERE (';
+    foreach ($filters as $filter => $value) {
+      if ($join == ' OR ') $join = ') AND (';
+      if ($filter != 'fecha_cfd') {
+        foreach ($value as $k => $v) {
+          if ($v == NULL)
+            $query .= $join . $filter . " IS NULL";
+          else
+            $query .= $join . $filter . " = '$v'";
 
-  $results = pager_query('SELECT * FROM {cfdr}' . tablesort_sql($header), 30);
-
+          if ($join != ' OR ') $join = ' OR ';
+        }
+      }
+      else {
+        // $filter is fecha_cfd
+        $query .= $join . "fecha_cfd >= '" . $value['start'] . "' AND fecha_cfd <= '" . $value['end'] . "'";
+        if ($join == ' WHERE (') $join = ') AND (';
+      }
+    }
+    $query .= ')';
+  }
+  $results = pager_query($query . tablesort_sql($header), 30);
+  // drupal_set_message($query . tablesort_sql($header), 'status', FALSE);
   while ($cfd = db_fetch_object($results)) {
     $basename = basename($cfd->xml_filename);
     $name = substr($basename, 0, strrpos($basename, '.'));
@@ -193,7 +220,134 @@ function cfdr_view_cfds() {
   if (empty($rows))
     $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '7'));
 
-  return theme('table', $header, $rows) . theme('pager', NULL, 30, 0);
+  return drupal_get_form('cfdr_filters_form') . theme('table', $header, $rows) . theme('pager', NULL, 30, 0);
+}
+
+/**
+ * filter form for 'cfdr' menu entry callback
+ **/
+function cfdr_filters_form() {
+  $form['filters'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Filter'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['filters']['serie'] = array(
+    '#type' => 'select',
+    '#title' => 'Serie',
+    '#default_value' => @array_keys($_SESSION['cfdr_filters']['serie']),
+    '#options' => _cfdr_get_select('serie'),
+    '#multiple' => TRUE,
+  );
+  // RFCs
+  $form['filters']['emisor_rfc'] = array(
+    '#type' => 'select',
+    '#title' => 'RFC Emisor',
+    '#default_value' =>  @array_keys($_SESSION['cfdr_filters']['emisor_rfc']),
+    '#options' => _cfdr_get_select('emisor_rfc'),
+    '#multiple' => TRUE,
+  );
+  $form['filters']['receptor_rfc'] = array(
+    '#type' => 'select',
+    '#title' => 'RFC Receptor',
+    '#default_value' =>  @array_keys($_SESSION['cfdr_filters']['receptor_rfc']),
+    '#options' => _cfdr_get_select('receptor_rfc'),
+    '#multiple' => TRUE,
+  );
+  // Date filter
+  $form['filters']['fecha_cfd']['start'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Start date'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#description' => t('Format: yyyy-mm-dd'),
+    '#default_value' => substr($_SESSION['cfdr_filters']['fecha_cfd']['start'], 0, 10),
+  );
+  $form['filters']['fecha_cfd']['end'] = array(
+    '#type' => 'textfield',
+    '#title' => t('End date'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#description' => t('Format: yyyy-mm-dd'),
+    '#default_value' => substr($_SESSION['cfdr_filters']['fecha_cfd']['end'], 0, 10),
+  );
+  // Buttons
+  $form['filters']['filter'] = array(
+    '#type' => 'submit',
+    '#value' => t('Filter'),
+  );
+  $form['filters']['reset'] = array(
+    '#type' => 'submit',
+    '#value' => t('Reset'),
+  );
+  $form['filters']['#theme'] = 'cfdr_filters_fieldset';
+  // $form['#redirect'] = 'cfdr';
+  $form['#validate'][] = 'cfdr_filters_form_validate';
+  $form['#submit'][] = 'cfdr_filters_form_submit';
+  return $form;
+}
+
+/**
+ *
+ **/
+function cfdr_filters_form_submit($form, &$form_state) {
+  unset($_SESSION['cfdr_filters']);
+  if ($form_state['values']['op'] == t('Reset')) {
+    return;
+  }
+  $filters = &$_SESSION['cfdr_filters'];
+  $values = $form_state['values'];
+  // dpm($form);
+
+  foreach ($values['emisor_rfc'] as $key)
+    $filters['emisor_rfc'][$key] = $form['filters']['emisor_rfc']['#options'][$key];
+
+  foreach ($values['serie'] as $key)
+    $filters['serie'][$key] = $form['filters']['serie']['#options'][$key];
+
+  foreach ($values['receptor_rfc'] as $key)
+    $filters['receptor_rfc'][$key] = $form['filters']['receptor_rfc']['#options'][$key];
+
+  if ($values['start']) {
+    $start = date_make_date($values['start']);
+    $filters['fecha_cfd']['start'] = date_format($start, DATE_FORMAT_ISO);
+  }
+  if ($values['end']) {
+    // 86399 seconds = one day - 1 second
+    $end = date_make_date(date_format(date_make_date($values['end']), DATE_FORMAT_UNIX) + 86399, NULL, DATE_UNIX);
+    $filters['fecha_cfd']['end'] = date_format($end, DATE_FORMAT_ISO);
+  }
+}
+
+/**
+ * undocumented function
+ *
+ **/
+function _cfdr_get_select($field) {
+  $results = db_query('SELECT ' . $field . ' FROM {cfdr} GROUP BY ' . $field);
+  while ($result = db_fetch_object($results)) {
+    $options[] = $result->$field;
+  }
+  return $options;
+}
+
+/**
+ * Theme for for cfdr_filter_form()
+ **/
+function theme_cfdr_filters_fieldset($form) {
+  $output = '';
+  // $output .= drupal_render($form['serie']);
+  $output .= '<div style="display: table-row;">';
+    $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['serie']) . '</div>';
+    $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['emisor_rfc']) . '</div>';
+    $output .= '<div style="display: table-cell;">' . drupal_render($form['receptor_rfc']) . '</div>';
+  $output .= '</div><div style="display: table-row;">';
+    $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['fecha_cfd']['start']) . '</div>';
+    $output .= '<div style="display: table-cell;">' . drupal_render($form['fecha_cfd']['end']) . '</div>';
+  $output .= '</div>';
+  $output .= drupal_render($form['filter']) . drupal_render($form['reset']);
+  return $output;
 }
 
 /**
@@ -269,9 +423,9 @@ function cfdr_cron() {
  * Scans for .xml cfds in configured directory and moves XML CFDs to another dir
  **/
 function cfdr_scan() {
-  $scan_path = variable_get('cfdr_scan_path', 'sites/default/cfd');
-  $move_path = variable_get('cfdr_move_path', 'sites/default/cfd/scanned');
-  if ($files = file_scan_directory($scan_path, '.xml|.XML$', array('.', '..', 'CVS'), 0, FALSE)) {
+  $scan_path = variable_get('cfdr_scan_path', 'sites/default/cfd/new');
+  $move_path = variable_get('cfdr_move_path', 'sites/default/cfd');
+  if ($files = file_scan_directory($scan_path, '.xml|.XML$', array('.', '..', 'CVS'), 0, TRUE)) {
     $count = 0;
     foreach ($files as $file) {
       $new_filename = $move_path . '/' . $file->basename;
@@ -283,5 +437,6 @@ function cfdr_scan() {
       }
     }
   }
-  watchdog('cfdr', '@count files imported succesfully', array('@count' => $count), WATCHDOG_NOTICE);
+  if ($count > 0)
+    watchdog('cfdr', '@count files imported succesfully', array('@count' => $count), WATCHDOG_NOTICE);
 }
