@@ -186,20 +186,25 @@ function cfdr_view_cfds() {
     $join .= ' WHERE (';
     foreach ($filters as $filter => $value) {
       if ($join == ' OR ') $join = ') AND (';
-      if ($filter != 'fecha_cfd') {
-        foreach ($value as $k => $v) {
-          if ($v == NULL)
-            $query .= $join . $filter . " IS NULL";
-          else
-            $query .= $join . $filter . " = '$v'";
+      switch ($filter) {
+        default:
+          foreach ($value as $k => $v) {
+            if ($v == NULL)
+              $query .= $join . $filter . " IS NULL";
+            else
+              $query .= $join . $filter . " = '$v'";
 
-          if ($join != ' OR ') $join = ' OR ';
-        }
-      }
-      else {
-        // $filter is fecha_cfd
-        $query .= $join . "fecha_cfd >= '" . $value['start'] . "' AND fecha_cfd <= '" . $value['end'] . "'";
-        if ($join == ' WHERE (') $join = ') AND (';
+            if ($join != ' OR ') $join = ' OR ';
+          }
+          break;
+        case 'fecha_cfd':
+          $query .= $join . "fecha_cfd >= '" . $value['start'] . "' AND fecha_cfd <= '" . $value['end'] . "'";
+          if ($join == ' WHERE (') $join = ') AND (';
+          break;
+        case 'emisor_nombre':
+          $query .= $join . $filter . " LIKE '%%$value%%'";
+          if ($join == ' WHERE (') $join = ') AND (';
+          break;
       }
     }
     $query .= ')';
@@ -212,7 +217,7 @@ function cfdr_view_cfds() {
     $rows[] = array(
       array('data' => $cfd->serie),
       array('data' => $cfd->folio),
-      array('data' => $cfd->emisor_rfc),
+      array('data' => $cfd->emisor_nombre),
       array('data' => date_format_date(date_make_date($cfd->fecha_cfd), 'short')),
       array('data' => $cfd->receptor_rfc),
       array('data' => $cfd->importe),
@@ -242,14 +247,21 @@ function cfdr_filters_form() {
     '#options' => _cfdr_get_select('serie'),
     '#multiple' => TRUE,
   );
-  // RFCs
-  $form['filters']['emisor_rfc'] = array(
-    '#type' => 'select',
-    '#title' => 'RFC Emisor',
-    '#default_value' =>  @array_keys($_SESSION['cfdr_filters']['emisor_rfc']),
-    '#options' => _cfdr_get_select('emisor_rfc'),
-    '#multiple' => TRUE,
+  $form['filters']['emisor_nombre'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Nombre emisor',
+    '#size' => 50,
+    '#maxlength' => 255,
+    '#default_value' => $_SESSION['cfdr_filters']['emisor_nombre']
   );
+  // RFCs
+  // $form['filters']['emisor_rfc'] = array(
+  //   '#type' => 'select',
+  //   '#title' => 'RFC Emisor',
+  //   '#default_value' =>  @array_keys($_SESSION['cfdr_filters']['emisor_rfc']),
+  //   '#options' => _cfdr_get_select('emisor_rfc'),
+  //   '#multiple' => TRUE,
+  // );
   $form['filters']['receptor_rfc'] = array(
     '#type' => 'select',
     '#title' => 'RFC Receptor',
@@ -302,8 +314,8 @@ function cfdr_filters_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   // dpm($form);
 
-  foreach ($values['emisor_rfc'] as $key)
-    $filters['emisor_rfc'][$key] = $form['filters']['emisor_rfc']['#options'][$key];
+  // foreach ($values['emisor_rfc'] as $key)
+  //   $filters['emisor_rfc'][$key] = $form['filters']['emisor_rfc']['#options'][$key];
 
   foreach ($values['serie'] as $key)
     $filters['serie'][$key] = $form['filters']['serie']['#options'][$key];
@@ -319,6 +331,9 @@ function cfdr_filters_form_submit($form, &$form_state) {
     // 86399 seconds = one day - 1 second
     $end = date_make_date(date_format(date_make_date($values['end']), DATE_FORMAT_UNIX) + 86399, NULL, DATE_UNIX);
     $filters['fecha_cfd']['end'] = date_format($end, DATE_FORMAT_ISO);
+  }
+  if ($values['emisor_nombre']) {
+    $filters['emisor_nombre'] = $values['emisor_nombre'];
   }
 }
 
@@ -340,10 +355,10 @@ function _cfdr_get_select($field) {
  **/
 function theme_cfdr_filters_fieldset($form) {
   $output = '';
-  // $output .= drupal_render($form['serie']);
+  $output .= drupal_render($form['emisor_nombre']);
   $output .= '<div style="display: table-row;">';
     $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['serie']) . '</div>';
-    $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['emisor_rfc']) . '</div>';
+    // $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['emisor_rfc']) . '</div>';
     $output .= '<div style="display: table-cell;">' . drupal_render($form['receptor_rfc']) . '</div>';
   $output .= '</div><div style="display: table-row;">';
     $output .= '<div style="display: table-cell; padding-right: 15px">' . drupal_render($form['fecha_cfd']['start']) . '</div>';
