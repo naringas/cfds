@@ -96,6 +96,7 @@ function cfdr_insert($filename) {
   $folio = $xpath->query('/cfd:Comprobante/@folio');
   $receptor_rfc = $xpath->query('/cfd:Comprobante/cfd:Receptor/@rfc');
   $emisor_rfc = $xpath->query('/cfd:Comprobante/cfd:Emisor/@rfc');
+  $emisor_nombre = $xpath->query('/cfd:Comprobante/cfd:Emisor/@nombre');
   $fecha_cfd = $xpath->query('/cfd:Comprobante/@fecha');
   $importe = $xpath->query('/cfd:Comprobante/@total');
 
@@ -104,6 +105,7 @@ function cfdr_insert($filename) {
   $cfdr->folio = $folio->item(0)->value;
   $cfdr->receptor_rfc = $receptor_rfc->item(0)->value;
   $cfdr->emisor_rfc = $emisor_rfc->item(0)->value;
+  $cfdr->emisor_nombre = $emisor_nombre->item(0)->value;
   $cfdr->fecha_cfd = $fecha_cfd->item(0)->value;
   $cfdr->importe = $importe->item(0)->value;
   $cfdr->xml_filename = $filename;
@@ -326,6 +328,7 @@ function cfdr_filters_form_submit($form, &$form_state) {
  **/
 function _cfdr_get_select($field) {
   $results = db_query('SELECT ' . $field . ' FROM {cfdr} GROUP BY ' . $field);
+  $options = array();
   while ($result = db_fetch_object($results)) {
     $options[] = $result->$field;
   }
@@ -398,9 +401,10 @@ function cfdr_download_pdf($cfdr_id) {
   //generate PDF
   $pdf = cfd_make_pdf(cfdr_load_filename($cfdr_id));
   //send generated file to browser
-  $pdf->SetTitle($node->title);
-  $pdf->SetDisplayMode('fullpage');
-  $pdf->Output("$node->title.pdf");
+  // $pdf->SetTitle($node->title);
+  // $pdf->SetDisplayMode('fullpage');
+  // $pdf->Output("$node->title.pdf");
+  $pdf->Output();
 }
 
 /**
@@ -428,6 +432,7 @@ function cfdr_scan() {
   if ($files = file_scan_directory($scan_path, '.xml|.XML$', array('.', '..', 'CVS'), 0, TRUE)) {
     $count = 0;
     foreach ($files as $file) {
+      if ($count > 100) break;
       $new_filename = $move_path . '/' . $file->basename;
       // move to $move_path
       if (rename($file->filename, $new_filename)) {

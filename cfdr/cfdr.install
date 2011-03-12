@@ -51,6 +51,12 @@ function cfdr_schema() {
         'not null' => FALSE,
         'description' => t("Emitting party's RFC"),
       ),
+      'emisor_nombre' => array(
+        'type' => 'text',
+        'size' => 'tiny',
+        'not null' => FALSE,
+        'description' => t("Emitting party's name"),
+      ),
       'receptor_rfc' => array(
         'type' => 'varchar',
         'length' => '13',
