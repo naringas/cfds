@@ -79,7 +79,7 @@ function cfdr_perm() {
  * Saves a fully loaded cfdr object to {cfdr}
  **/
 function cfdr_save(&$cfdr) {
-  drupal_write_record('cfdr', $cfdr);
+  return drupal_write_record('cfdr', $cfdr);
 }
 
 /**
@@ -94,6 +94,8 @@ function cfdr_insert($filename) {
   $xpath->registerNamespace('cfd', 'http://www.sat.gob.mx/cfd/2');
   $serie = $xpath->query('/cfd:Comprobante/@serie');
   $folio = $xpath->query('/cfd:Comprobante/@folio');
+  // abort if not on a CFD
+  if (!$folio->length) return FALSE;
   $receptor_rfc = $xpath->query('/cfd:Comprobante/cfd:Receptor/@rfc');
   $emisor_rfc = $xpath->query('/cfd:Comprobante/cfd:Emisor/@rfc');
   $emisor_nombre = $xpath->query('/cfd:Comprobante/cfd:Emisor/@nombre');
@@ -110,7 +112,7 @@ function cfdr_insert($filename) {
   $cfdr->importe = $importe->item(0)->value;
   $cfdr->xml_filename = $filename;
 
-  cfdr_save($cfdr);
+  return cfdr_save($cfdr);
 }
 
 /**
@@ -452,8 +454,8 @@ function cfdr_scan() {
       // move to $move_path
       if (rename($file->filename, $new_filename)) {
         // add entry to {cfdr} form .xml file
-        cfdr_insert($new_filename);
-        $count++;
+        if (cfdr_insert($new_filename))
+          $count++;
       }
     }
   }
