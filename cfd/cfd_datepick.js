@@ -4,7 +4,7 @@
 
 $(document).ready(function() {
   $("#edit-start, #edit-end").datepick({
-    minDate: '-5w',
+    minDate: '-10w',
     maxDate: '+0',
     pickerClass: 'noPrevNext',
     showOtherMonths: true,

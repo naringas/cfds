@@ -236,6 +236,7 @@ function cfdr_view_cfds() {
  * filter form for 'cfdr' menu entry callback
  **/
 function cfdr_filters_form() {
+  cfd_include_datepick();
   $form['filters'] = array(
     '#type' => 'fieldset',
     '#title' => t('Filter'),

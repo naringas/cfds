@@ -104,3 +104,15 @@ function cfd_xml_schema_validate($xml) {
   $validcfd = @$doc->schemaValidate($schemaFileName);
   return $validcfd;
 }
+
+/**
+ * Adds Datepick jquery (http://keith-wood.name/datepick.html)
+ *
+ **/
+function cfd_include_datepick() {
+  global $language;
+  drupal_add_js(libraries_get_path('datepick') . '/jquery.datepick.js');
+  drupal_add_js(libraries_get_path('datepick') . "/jquery.datepick-$language->language.js");
+  drupal_add_css(drupal_get_path('module', 'cfd') . '/cfd_datepick.css');
+  drupal_add_js(drupal_get_path('module', 'cfd')  . '/cfd_datepick.js');
+}

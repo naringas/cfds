@@ -420,12 +420,7 @@ function cfde_view_cfds() {
  * TODO be smart about datepick (add settings?)
  */
 function cfde_datefilter_form() {
-  // @todo Detect language, somehow
-  drupal_add_js(libraries_get_path('datepick') . '/jquery.datepick.js');
-  drupal_add_js(libraries_get_path('datepick') . '/jquery.datepick-es.js');
-  drupal_add_css(drupal_get_path('module', 'cfde') . '/basa.datepick.css');
-  drupal_add_js(drupal_get_path('module', 'cfde')  . '/cfde_datepick.js');
-  
+  cfd_include_datepick();    
   // $cal_img = libraries_get_path('datepick') . '/calendar-blue.gif';
   // <img id="calImg" src="sites/all/libraries/datepick/calendar-blue.gif" class="trigger">
   $form['date_filter'] = array(
