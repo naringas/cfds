@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2011-03-04 12:11-0600\n"
-"PO-Revision-Date: 2011-03-04 12:13-0500\n"
+"PO-Revision-Date: 2011-03-17 10:42-0500\n"
 "Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
@@ -181,8 +181,8 @@ msgstr "CFD emitido"
 #: cfde.module:16
 msgid "Provides content type support for Mexican CFDs for distribution (emission)"
 msgstr ""
-"Proporciona soporte para Facturas Electronicas emitidas (de Mexico) "
-"como un tipo de contenido"
+"Proporciona soporte para Facturas Electrónicas emitidas (de Mexico) como un "
+"tipo de contenido"
 
 #: cfde.module:18;357
 msgid "FE #"
@@ -328,7 +328,7 @@ msgstr "Vista HTML"
 
 #: cfde.module:55
 msgid "View Facturas Electronicas"
-msgstr "Ver Facturas Electronicas"
+msgstr "Ver Facturas Electrónicas"
 
 #: cfde.module:63
 msgid "Import CFDs"
