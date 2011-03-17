@@ -399,7 +399,7 @@ function cfde_view_cfds() {
     $end = $_SESSION['cfds_filter']['end'];
     $basic_query .= " AND {cfde}.fecha_cfd >= '$start' AND {cfde}.fecha_cfd <= '$end'";
   }
-  $results = pager_query($basic_query . ' ORDER BY {cfde}.fecha_cfd ASC', 10);
+  $results = pager_query($basic_query . ' ORDER BY {cfde}.fecha_cfd DESC', 10);
   
   // construct the list
   $list = array();
