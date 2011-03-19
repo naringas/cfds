@@ -78,7 +78,7 @@ function cfde_menu() {
     'file' => './cfde.admin.inc',
   );
   $menu['cfde/admin'] = array(
-    'title' => 'Emitted CFD',
+    'title' => 'Administer Emitted CFDs',
     'description' => 'Administer emitted CFDs from a convenient page',
     'access callback' => 'user_access',
     'access arguments' => array('view any CFD'),

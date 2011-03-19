@@ -14,8 +14,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-03-04 12:11-0600\n"
-"PO-Revision-Date: 2011-03-17 10:42-0500\n"
+"POT-Creation-Date: 2011-03-19 11:32-0600\n"
+"PO-Revision-Date: 2011-03-19 11:49-0500\n"
 "Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
@@ -74,9 +74,10 @@ msgstr "Antiguedad máxima de nodos <em>en segundos</em>"
 #: cfde.admin.inc:41
 msgid "Nodes older than these seconds will be deleted. Based on node creation date (not CFD emission date).<br /><em>0 seconds</em> disables node expiration."
 msgstr ""
-"Nodos con mayor antigüedad a los segundos especificados serán eliminados. "
-"Basandose en la fecha de creación del nodo (no en la fecha de creación del "
-"CFD).<br /><em>0 segundos</em> deshabilita la expiración de nodos."
+"Nodos con mayor antigüedad a los segundos especificados serán "
+"eliminados. Basandose en la fecha de creación del nodo (no en la "
+"fecha de creación del CFD).<br /><em>0 segundos</em> deshabilita la "
+"expiración de nodos."
 
 #: cfde.admin.inc:46
 msgid "User Registration"
@@ -110,15 +111,15 @@ msgstr "Seleccione un archivo @type"
 msgid "Submit"
 msgstr "Enviar"
 
-#: cfde.import.inc:26 cfde.module:238
+#: cfde.import.inc:26 cfde.module:246
 msgid "You must submit a @type file"
 msgstr "Debe enviar un archivo @type"
 
-#: cfde.import.inc:34 cfde.module:687
+#: cfde.import.inc:34 cfde.module:692
 msgid "@num CFDs imported from @filename"
 msgstr "@num CFDs importadas desde @filename"
 
-#: cfde.import.inc:37 cfde.module:691
+#: cfde.import.inc:37 cfde.module:696
 msgid "@file not imported succesfully"
 msgstr "@file no fue importado satisfactoriamente"
 
@@ -181,138 +182,138 @@ msgstr "CFD emitido"
 #: cfde.module:16
 msgid "Provides content type support for Mexican CFDs for distribution (emission)"
 msgstr ""
-"Proporciona soporte para Facturas Electrónicas emitidas (de Mexico) como un "
-"tipo de contenido"
+"Proporciona soporte para Facturas Electronicas emitidas (de Mexico) "
+"como un tipo de contenido"
 
-#: cfde.module:18;357
+#: cfde.module:18;365
 msgid "FE #"
 msgstr "FE #"
 
-#: cfde.module:180;345;357
+#: cfde.module:188;353;365
 msgid "Download"
 msgstr "Descargar"
 
-#: cfde.module:188
+#: cfde.module:196
 msgid "Select @type file"
 msgstr "Seleccione un archivo @type"
 
-#: cfde.module:191
+#: cfde.module:199
 msgid "The CFD in XML format"
 msgstr "El CFD en formato XML"
 
-#: cfde.module:234
+#: cfde.module:242
 msgid "The XML file %file is not a valid CFD"
 msgstr "El archivo XML %file no es un CFD valido"
 
-#: cfde.module:334
+#: cfde.module:342
 msgid "FE-@title"
 msgstr "FE-@title"
 
-#: cfde.module:357
+#: cfde.module:365
 msgid "Date"
 msgstr "Fecha"
 
-#: cfde.module:372
+#: cfde.module:382
 msgid "No CFDs available."
 msgstr "No CFDs disponibles."
 
-#: cfde.module:433
+#: cfde.module:438
 msgid "Date filter"
 msgstr "Filtro de fecha"
 
-#: cfde.module:437
+#: cfde.module:442
 msgid "Start date"
 msgstr "Fecha de inicio"
 
-#: cfde.module:440;448
+#: cfde.module:445;453
 msgid "Format: yyyy-mm-dd"
 msgstr "Formato: aaaa-mm-dd"
 
-#: cfde.module:445
+#: cfde.module:450
 msgid "End date"
 msgstr "Fecha final"
 
-#: cfde.module:455
+#: cfde.module:460
 msgid "Filter"
 msgstr "Filtrar"
 
-#: cfde.module:459;469;487
+#: cfde.module:464;474;492
 msgid "Reset"
 msgstr "Reiniciar"
 
-#: cfde.module:477
+#: cfde.module:482
 msgid "Please use the calendar popup or the format: yyyy-mm-dd"
 msgstr "Por favor utilize el calendario emergente o el formato: aaaa-mm-dd"
 
-#: cfde.module:584
+#: cfde.module:589
 msgid "Invalid RFC"
 msgstr "RFC Invalido"
 
-#: cfde.module:590
+#: cfde.module:595
 msgid "RFC not recognized"
 msgstr "Su RFC no ha sido reconocido"
 
-#: cfde.module:610
+#: cfde.module:615
 msgid "Username (RFC) change"
 msgstr "El nombre de usuario (RFC) cambio"
 
-#: cfde.module:630
+#: cfde.module:635
 msgid "Recieve notification on new FEs"
 msgstr "Recibir notificaciones de nuevas FEs"
 
-#: cfde.module:632
+#: cfde.module:637
 msgid "Check this option if you wish to receive an email notification whenever FEs are emitted for you"
 msgstr ""
 "Marque esta opción si desea recibir una notificación por correo "
 "electrónico cuando haya nuevas FEs disponibles para usted"
 
-#: cfde.module:754 cfde.install:67
+#: cfde.module:759 cfde.install:70
 msgid "Date of the CFD"
 msgstr "Fecha del CFD"
 
-#: cfde.module:755
+#: cfde.module:760
 msgid "Full date of the CFD"
 msgstr "Fecha completa del CFD"
 
-#: cfde.module:756 cfde.install:62
+#: cfde.module:761 cfde.install:65
 msgid "Receiving party's RFC (client)"
 msgstr "RFC del receptor (cliente)"
 
-#: cfde.module:757 cfde.install:56
+#: cfde.module:762 cfde.install:59
 msgid "{users}.uid associated with the CFD"
 msgstr "{users}.uid asociada con el CFD"
 
-#: cfde.module:758
+#: cfde.module:763
 msgid "HTML links to download this CFD (XML and PDF)"
 msgstr "Ligas en HTML para descargar este CFD (en XML y PDF)"
 
-#: cfde.module:687;691;725
+#: cfde.module:692;696;730
 msgid "cfde"
 msgstr "cfde"
 
-#: cfde.module:725
+#: cfde.module:730
 msgid "@num CFDs deleted"
 msgstr "@num CFDs elimidadas"
 
-#: cfde.module:105
+#: cfde.module:113
 msgid "create CFDs"
 msgstr "crear CFDs"
 
-#: cfde.module:105
+#: cfde.module:113
 msgid "view assigned CFDs"
 msgstr "ver CFDs asignados"
 
-#: cfde.module:105
+#: cfde.module:113
 msgid "delete any CFD"
 msgstr "eliminar cualquier CFD"
 
-#: cfde.module:105
+#: cfde.module:113
 msgid "view any CFD"
 msgstr "ver cualquier CFD"
 
-#: cfde.module:105
+#: cfde.module:113
 msgid "administer cfde"
-msgstr "Administrar cfde"
+msgstr "administrar cfde"
 
 #: cfde.module:32
 msgid "Download PDF"
@@ -328,39 +329,47 @@ msgstr "Vista HTML"
 
 #: cfde.module:55
 msgid "View Facturas Electronicas"
-msgstr "Ver Facturas Electrónicas"
+msgstr "Ver Facturas Electronicas"
 
-#: cfde.module:63
+#: cfde.module:62
 msgid "Import CFDs"
 msgstr "Importar CFDs"
 
-#: cfde.module:64
+#: cfde.module:63
 msgid "Import CFDs from a compressed file."
 msgstr "Importa CFDs desde un archivo comprimido."
 
-#: cfde.module:73 cfde.info:0
+#: cfde.module:72 cfde.info:0
 msgid "CFD - Emission"
 msgstr "CFD - Emisión"
 
-#: cfde.module:74
+#: cfde.module:73
 msgid "Configure CFD - Emission settings"
 msgstr "Opcionces de CFD - Emisión"
 
-#: cfde.install:35
+#: cfde.module:81
+msgid "Administer Emitted CFDs"
+msgstr "Administrar CFDs emitidas"
+
+#: cfde.module:82
+msgid "Administer emitted CFDs from a convenient page"
+msgstr "Administrar CFDs emitidas desde una conveniente página"
+
+#: cfde.install:38
 msgid "Stores CFDs emitted in XML. also stores RFC and date for access control and searching"
 msgstr ""
 "Guarda CFD en XML y también el RFC y la fecha para control de acceso "
 "y busqueda"
 
-#: cfde.install:42
+#: cfde.install:45
 msgid "The cfd's {node}.nid"
 msgstr "El {node}.nid del CFD"
 
-#: cfde.install:49
+#: cfde.install:52
 msgid "The cfd's {node_revisions}.vid"
 msgstr "La {node_revisions}.vid del CFD"
 
-#: cfde.install:73
+#: cfde.install:76
 msgid "The XML contents of the CFD"
 msgstr "El Contenido en XML del CFD"
 
