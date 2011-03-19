@@ -55,7 +55,6 @@ function cfde_menu() {
     'title' => 'View Facturas Electronicas',
     'access callback' => 'user_access',
     'access arguments' => array('view assigned CFDs'),
-//    'page callback' => 'cfde_page_view',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfde_view_cfds'),
   );
@@ -76,6 +75,15 @@ function cfde_menu() {
     'access arguments' => array('administer cfde'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('cfde_admin_form'),
+    'file' => './cfde.admin.inc',
+  );
+  $menu['cfde/admin'] = array(
+    'title' => 'Emitted CFD',
+    'description' => 'Administer emitted CFDs from a convenient page',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any CFD'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('cfde_admin_cfds'),
     'file' => './cfde.admin.inc',
   );
   return $menu;
@@ -135,7 +143,7 @@ function cfde_access($op, $node, $account = NULL) {
       return user_access('delete any CFD', $account);
 
     case 'update':
-      return FALSE;
+      return user_access('delete any CFD', $account);
   }
 }
 
@@ -357,6 +365,8 @@ function theme_cfde_view_cfds($form) {
   $header = array(t('FE #'), t('Date'), t('Download'));
 
   $output = '';
+  // code for custom pager from admin form (cfde/admin)
+  if ($form['pagerito']) $output .= drupal_render($form['pagerito']);
 
   $output .= drupal_render($form['date_filter']);
   if ($has_posts) {

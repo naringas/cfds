@@ -13,7 +13,7 @@ function cfde_import_form() {
     '#type' => 'submit',
     '#value' => t('Submit'),
   );
-  $form['#redirect'] = 'admin/content/node';
+  $form['#redirect'] = 'cfde/admin';
 
   return $form;
 }
