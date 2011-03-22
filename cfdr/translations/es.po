@@ -2,17 +2,17 @@
 # Spanish translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-# cfd.import.inc: n/a
-# cfd.module: n/a
-# cfd.install: n/a
-# cfd.info: n/a
-# naringas <webmaster@casabaltazar.com>, 2011.
+# cfdr.admin.inc: n/a
+# cfdr.module: n/a
+# cfdr.install: n/a
+# cfdr.info: n/a
+# b s <naringas@1044190.no-reply.drupal.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2011-01-20 12:48-0600\n"
-"PO-Revision-Date: 2011-01-20 12:49-0500\n"
-"Last-Translator: naringas <webmaster@casabaltazar.com>\n"
+"POT-Creation-Date: 2011-03-22 09:59-0600\n"
+"PO-Revision-Date: 2011-03-22 10:07-0500\n"
+"Last-Translator: b s <naringas@1044190.no-reply.drupal.org>\n"
 "Language-Team: null\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -21,136 +21,150 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: cfd.import.inc:8
-msgid "Select a @type file"
-msgstr "Seleccione un archivo @type"
+#: cfdr.admin.inc:11
+msgid "Path where to look for .xml files"
+msgstr "Ruta en dónde buscar archivos .xml"
 
-#: cfd.import.inc:12
-msgid "Submit"
-msgstr "Enviar"
-
-#: cfd.import.inc:24 cfd.module:214
-msgid "You must submit a @type file"
-msgstr "Debe enviar un archivo @type"
-
-#: cfd.module:12
-msgid "Provides content type support for Mexican CFDs or 'facturas'"
+#: cfdr.admin.inc:13
+msgid "It is recomended to use a restrictive \".htaccess\" file in this directory"
 msgstr ""
-"Proporciona soporte para Facturas Electronicas (de Mexico) como un "
-"tipo de contenido"
+"Es recomendado utilizar un archivo \".htaccess\" con restricciones en "
+"este directorio"
 
-#: cfd.module:14;320
-msgid "FE #"
-msgstr "FE #"
+#: cfdr.admin.inc:17
+msgid "Path where to move scanned .xml files"
+msgstr "Ruta a dónde mover archivos .xml escaneados"
 
-#: cfd.module:136;320;658;28;36
-msgid "Download"
-msgstr "Descargar"
+#: cfdr.admin.inc:19
+msgid "Must be different from <strong>Path where to look for .xml files</strong>"
+msgstr ""
+"Debe ser diferente de <strong>Ruta en dónde buscar archivos .xml</strong>"
 
-#: cfd.module:144
-msgid "Select @type file"
-msgstr "Seleccione un archivo @type"
+#: cfdr.admin.inc:27
+msgid "Reset to defaults"
+msgstr "Restablecer valores predeterminados"
 
-#: cfd.module:147
-msgid "The CFD in XML format"
-msgstr "El CFD en formato XML"
+#: cfdr.module:140;179
+msgid "Emisor"
+msgstr "Emisor"
 
-#: cfd.module:210
-msgid "The XML file %file is not a valid CFD"
-msgstr "El archivo XML %file no es un CFD valido"
-
-#: cfd.module:320
+#: cfdr.module:140;180
 msgid "Date"
 msgstr "Fecha"
 
-#: cfd.module:335
+#: cfdr.module:140;181
+msgid "Receptor"
+msgstr "Receptor"
+
+#: cfdr.module:140;183;21;29
+msgid "Download"
+msgstr "Descargar"
+
+#: cfdr.module:159;230
 msgid "No CFDs available."
 msgstr "No CFDs disponibles."
 
-#: cfd.module:390
-msgid "Start date"
-msgstr "Fecha inicial"
-
-#: cfd.module:397
-msgid "End date"
-msgstr "Fecha final"
-
-#: cfd.module:403
+#: cfdr.module:242;295
 msgid "Filter"
 msgstr "Filtrar"
 
-#: cfd.module:407;417;434
+#: cfdr.module:278
+msgid "Start date"
+msgstr "Fecha de inicio"
+
+#: cfdr.module:281;289
+msgid "Format: yyyy-mm-dd"
+msgstr "Formato: aaaa-mm-dd"
+
+#: cfdr.module:286
+msgid "End date"
+msgstr "Fecha final"
+
+#: cfdr.module:299;313
 msgid "Reset"
 msgstr "Reiniciar"
 
-#: cfd.module:426
-msgid "End date must be after start date"
-msgstr "La fecha inicial debe ser después de la fecha final"
+#: cfdr.module:464
+msgid "cfdr"
+msgstr "cfdr"
 
-#: cfd.module:430
-msgid "Fill both dates or none"
-msgstr "Rellene ambas fechas o ninguna"
+#: cfdr.module:464
+msgid "@count files imported succesfully"
+msgstr "@count archivos importados satisfactoriamente"
 
-#: cfd.module:683
-msgid "cfd"
-msgstr "cfd"
+#: cfdr.module:75
+msgid "administer cfdr"
+msgstr "administrar cfdr"
 
-#: cfd.module:683
-msgid "@num F.E.s deleted"
-msgstr "@num F.E.s elimidadas"
+#: cfdr.module:75
+msgid "view any CFD"
+msgstr "ver cualquier CFD"
 
-#: cfd.module:66
-msgid "create FEs"
-msgstr "Crear FEs"
+#: cfdr.module:12
+msgid "View CFDs"
+msgstr "Ver CFDs"
 
-#: cfd.module:66
-msgid "view assigned FEs"
-msgstr "Ver FEs asignadas"
+#: cfdr.module:13
+msgid "View all CFDs"
+msgstr "Ver todos los CFDs"
 
-#: cfd.module:66
-msgid "delete any FE"
-msgstr "Eliminar cualquier FE"
+#: cfdr.module:37
+msgid "View CFD"
+msgstr "Ver CFD"
 
-#: cfd.module:43
-msgid "View Facturas Electronicas"
-msgstr "Ver Facturas Electronicas"
+#: cfdr.module:45
+msgid "CFD - Received Settings"
+msgstr "Opciones CFD - Recibido"
 
-#: cfd.module:51
-msgid "Import FEs"
-msgstr "Importar FEs"
+#: cfdr.module:46
+msgid "Configure CFD - Received options"
+msgstr "Configurar opciones de CFD - Recibido"
 
-#: cfd.module:52
-msgid "Import CFDs from a compressed file."
-msgstr "Importa CFDs desde un archivo comprimido."
-
-#: cfd.install:27
-msgid "Stores CFD in XML and also, RFC and date for access control and searching"
+#: cfdr.install:27
+msgid "Stores CFDs received as file path; and also both RFCs, date, series, and number (folio)"
 msgstr ""
-"Guarda CFD en XML y también el RFC y la fecha para control de acceso "
-"y busqueda"
+"Guarda la ruta hacia el CFD; y también ambos RFCs, la fecha, serie y folio."
 
-#: cfd.install:34
-msgid "The cfd's {node}.nid"
-msgstr "El {node}.nid del CFD"
+#: cfdr.install:33
+msgid "The cfdr id"
+msgstr "Númbero ID del cfdr"
 
-#: cfd.install:41
-msgid "The cfd's {node_revisions}.vid"
-msgstr "La {node_revisions}.vid del CFD"
+#: cfdr.install:39
+msgid "cfd's series (letters)"
+msgstr "Serie del CFD (letras)"
 
-#: cfd.install:48
-msgid "{users}.uid associated with the CFD; "
-msgstr "{users}.uid asociada con el CFD; "
+#: cfdr.install:46
+msgid "cfd's number"
+msgstr "Númbero del CFD"
 
-#: cfd.install:54
-msgid "The RFC of the client (receptor)"
-msgstr "El RFC del cliente (receptor)"
+#: cfdr.install:52
+msgid "Emitting party's RFC"
+msgstr "RFC del emisor"
 
-#: cfd.info:0
-msgid "Facturacion Electronica"
-msgstr "Facturacion Electronica"
+#: cfdr.install:58
+msgid "Emitting party's name"
+msgstr "Nombre del receptor"
 
-#: cfd.info:0
-msgid "Add CFD (Comprobante Fiscal Digital aka Factura Electronica) as a node content type"
-msgstr ""
-"Agrega un CFD (Comprobante Fiscal Digital o Factura Electronica) como "
-"tipo de contenido de nodo"
+#: cfdr.install:64
+msgid "Receiving party's RFC"
+msgstr "RFC del receptor"
+
+#: cfdr.install:69
+msgid "Date of the CFD"
+msgstr "Fecha del CFD"
+
+#: cfdr.install:77
+msgid "Total amount of the CFD"
+msgstr "Monto total del CFD"
+
+#: cfdr.install:83
+msgid "The full filename of the XML file"
+msgstr "Nombre de archivo completo del XML"
+
+#: cfdr.info:0
+msgid "CFD - Reception"
+msgstr "CFD - Recepción"
+
+#: cfdr.info:0
+msgid "Add CFD as content for collection (received CFDs)."
+msgstr "Agrega CFD como contenido para la recepción (CFDs recibidas)"
