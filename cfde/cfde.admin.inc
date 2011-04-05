@@ -68,11 +68,10 @@ function cfde_admin_form() {
 function cfde_admin_cfds() {
   $page = isset($_GET['page']) ? $_GET['page'] : 0;
 
-  // $basic_query = 'SELECT {cfde}.nid, {cfde}.fecha_cfd, {node}.title, {node}.created FROM {cfde} INNER JOIN {node} ON {cfde}.nid = {node}.nid WHERE {node}.created >= %d AND {node}.created <= %d ORDER BY {node}.title ASC';
-  $start = date_format(date_make_date(date('Y-m-d')), DATE_FORMAT_UNIX);
+  $start = date_format(date_make_date(date('Y-m-d'), 'UTC'), DATE_FORMAT_UNIX);
   $start -= ($page * 86400);
   $end = $start + 86399; // 86399 = 1 day - 1 second
-
+  // drupal_set_message($start . ' a ' . $end);
   $results = db_query('SELECT {cfde}.nid, {cfde}.fecha_cfd, {node}.title, {node}.created FROM {cfde} INNER JOIN {node} ON {cfde}.nid = {node}.nid  WHERE {node}.created >= %d AND {node}.created <= %d ORDER BY {node}.title ASC', $start, $end);
 
   // construct the list
@@ -88,17 +87,17 @@ function cfde_admin_cfds() {
 
   // Custom Pager
   if ($page > 0) {
-    $go_back = '
-      <li class="pager-first first"><a class="pager-first" href="?page=0">« hoy</a></li>
-      <li class="pager-previous"><a href="?page='. ($page-1) . '">‹ día después</a></li>';
+    $go_back =
+      '<li class="pager-first first"><a class="pager-first" href="?page=0">« hoy</a></li>' .
+      '<li class="pager-previous"><a href="?page=' . ($page-1) . '">‹ día después</a></li>';
   }
-  $date_display = date_format_date(date_make_date($start, NULL, DATE_UNIX), 'custom', 'l, j M Y');
+  $date_display = date_format_date(date_make_date($start, 'UTC', DATE_UNIX), 'custom', 'l, j M Y');
   $form['pagerito'] = array('#value' =>
     '<div class="item-list"><ul class="pager">' .
       $go_back .
       '<li class="pager-current">' . $date_display . '</li>' .
-      '<li class="pager-next"><a href="?page='. ($page+1) . '">día antes ›</a></li>
-    </ul></div>'
+      '<li class="pager-next"><a href="?page=' . ($page+1) . '">día antes ›</a></li>' .
+    '</ul></div>'
   );
   return $form;
 }
