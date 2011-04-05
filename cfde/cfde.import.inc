@@ -67,10 +67,10 @@ function cfde_import_zip($file_name) {
         // drupal_set_message(t('@node saved', array('@node' => $node->title)));
       }
     }
-  zip_close($zip);
   return $count;
   }
   else {
     return FALSE;
   }
+  zip_close($zip);
 }
