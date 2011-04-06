@@ -5,15 +5,23 @@
  */
 
 class FEpdf extends TCPDF {
-  protected $header_html;
-  public function headerHTML($html) {
-    $this->header_html = $html;
+  protected $doc;
+  protected $xsl;
+  public function registerHeader($doc) {
+    $this->doc = $doc;
+    $xsl_header_file = drupal_get_path('module', 'cfd') . '/resources/cfd_header.xsl';
+    $xsl_header = new DOMDocument();
+    $xsl_header->load($xsl_header_file);
+    $this->xsl = new XSLTProcessor();
+    $this->xsl->importStylesheet($xsl_header);
+    $this->xsl->registerPHPFunctions('_cfd_get_page');
+
   }
+
   public function Header() {
-    $this->writeHTML($this->header_html);
+    _cfd_get_page($this->getPage());
+    $this->writeHTML($this->xsl->transformToXml($this->doc));
     $this->SetTopMargin($this->getY() - 3);
-    $this->SetFontSize('10');
-    $this->MultiCell(0, 0, $this->getPage(), 0, '', FALSE, 0, 153.5, 72);
   }
 
   public function Footer() {

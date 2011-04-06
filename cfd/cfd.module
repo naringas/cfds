@@ -4,6 +4,20 @@
  * Also contatins Schema validation funcitons
  */
 
+/*
+ * Sets the page number in the Header (called with argument)
+ * Returns the page number inside the XSL transform for header (cfd_header.xsl)
+ */
+function _cfd_get_page($param = NULL) {
+  static $n;
+  if (!isset($param)) {
+    return $n;
+  }
+  else {
+    $n = $param;
+  }
+}
+
 /**
  * Makes a PDF based on 2 XSL Template files (located in resources/cfd_*.xsl)
  * one for header, one for content and also uses SAT provided file: cadenaoriginal_2_0.xslt
@@ -22,11 +36,6 @@ function cfd_make_pdf($xml) {
     $doc->load($xml, LIBXML_NOWARNING);
   else
     $doc->loadXML($xml);
-  //Header
-  $xsl_header_file = drupal_get_path('module', 'cfd') . '/resources/cfd_header.xsl';
-  $xsl_header = new DOMDocument(); $xsl_header->load($xsl_header_file);
-  $xsl = new XSLTProcessor(); $xsl->importStylesheet($xsl_header);
-  $html_header = $xsl->transformToXml($doc);
   //Content
   $xsl_content_file = drupal_get_path('module', 'cfd') . '/resources/cfd_content.xsl';
   $xsl_content = new DOMDocument(); $xsl_content->load($xsl_content_file);
@@ -42,7 +51,8 @@ function cfd_make_pdf($xml) {
   //generate PDF
   $pdf = new FEpdf();
   $pdf->SetMargins(10, 10, 10, TRUE);
-  $pdf->headerHTML($html_header);
+  //Header (in FEpdf.php)
+  $pdf->registerHeader($doc);
   $pdf->AddPage();
 
   $pdf->writeHTML($html_content.'<br />');
