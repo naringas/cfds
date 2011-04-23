@@ -32,6 +32,15 @@ function cfdr_menu() {
     'page callback' => 'cfdr_download_xml',
     'page arguments' => array(1),
   );
+  $menu['cfdr/%/validar'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Download',
+    'access callback' => 'user_access',
+    'access arguments' => array('view any FEs'),
+    'page callback' => 'cfdr_validate_xml',
+    'page arguments' => array(1),
+  );
+  /*
   $menu['cfdr/%cfdr'] = array(
     'type' => MENU_CALLBACK,
     'title' => 'View CFD',
@@ -40,6 +49,7 @@ function cfdr_menu() {
     'page callback' => 'cfdr_view_html',
     'page arguments' => array(1),
   );
+  */
   //Admin menu
   $menu['admin/settings/cfdr'] = array(
     'title' => 'CFD - Received Settings',
@@ -58,10 +68,6 @@ function cfdr_menu() {
  **/
 function cfdr_theme() {
   return array(
-    // may be removed
-    'cfdr_view_cfds' => array(
-      'arguments' => array('form' => NULL),
-    ),
     'cfdr_filters_fieldset' => array(
       'arguments' => array('form' => NULL),
     ),
@@ -132,48 +138,12 @@ function cfdr_load_filename($cfdr_id) {
   return db_result(db_query('SELECT xml_filename FROM {cfdr} WHERE cfdr_id = %d', $cfdr_id));
 }
 
-function theme_cfdr_view_cfds($form) {
-  //based on theme_node_admin_nodes() in core - node.admin.inc
-  // If there are rows in this form, then $form['title'] contains a list of
-  // the title form elements.
-  $has_posts = isset($form['list']['serie']) && is_array($form['list']['serie']);
-  $header = array('Serie', 'Folio', t('Emisor'), t('Date'), t('Receptor'), '$', t('Download'));
-
-  $output = '';
-
-  $output .= drupal_render($form['date_filter']);
-  if ($has_posts) {
-    foreach (element_children($form['list']['serie']) as $key) {
-      $row = array();
-      $row[] = drupal_render($form['list']['serie'][$key]);
-      $row[] = drupal_render($form['list']['folio'][$key]);
-      $row[] = drupal_render($form['list']['emisor_rfc'][$key]);
-      $row[] = drupal_render($form['list']['date'][$key]);
-      $row[] = drupal_render($form['list']['receptor_rfc'][$key]);
-      $row[] = drupal_render($form['list']['importe'][$key]);
-      $row[] = drupal_render($form['list']['links'][$key]);
-      $rows[] = $row;
-    }
-  }
-  else {
-    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '7'));
-  }
-
-  $output .= theme('table', $header, $rows);
-  if ($form['pager']['#value']) {
-    $output .= drupal_render($form['pager']);
-  }
-
-  $output .= drupal_render($form);
-
-  return $output;
-}
-
 /**
  * 'cfdr' menu entry callback
  **/
 function cfdr_view_cfds() {
   $header = array(
+    t('Valid'),
     array('data' => 'Serie', 'field' => 'serie'),
     array('data' => 'Folio', 'field' => 'folio'),
     array('data' => t('Emisor'), 'field' => 'emisor_rfc'),
@@ -217,6 +187,7 @@ function cfdr_view_cfds() {
     $basename = basename($cfd->xml_filename);
     $name = substr($basename, 0, strrpos($basename, '.'));
     $rows[] = array(
+      array('data' => cfdr_validity_image($cfd->valid, $cfd->cfdr_id)),
       array('data' => $cfd->serie),
       array('data' => $cfd->folio),
       array('data' => $cfd->emisor_nombre),
@@ -227,7 +198,7 @@ function cfdr_view_cfds() {
     );
   }
   if (empty($rows))
-    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '7'));
+    $rows[] = array(array('data' => t('No CFDs available.'), 'colspan' => '8'));
 
   return drupal_get_form('cfdr_filters_form') . theme('table', $header, $rows) . theme('pager', NULL, 30, 0);
 }
@@ -341,7 +312,7 @@ function cfdr_filters_form_submit($form, &$form_state) {
 }
 
 /**
- * undocumented function
+ * used to populate fields in cfdr_filter_form()
  *
  **/
 function _cfdr_get_select($field) {
@@ -426,12 +397,44 @@ function cfdr_download_pdf($cfdr_id) {
 }
 
 /**
+ * Validates the CFD aginst the XML schema
+ * structure validation
+ **/
+function cfdr_validate_xml($cfd_id) {
+  $validity = cfd_xml_schema_validate(cfdr_load_filename($cfd_id));
+  $update = array(
+    'cfdr_id' => $cfd_id,
+    'valid' => $validity,
+  );
+  drupal_write_record('cfdr', $update, 'cfdr_id');
+  drupal_goto('cfdr');
+}
+
+/**
  * returns the links string to download this cfd node as xml or pdf by using l()
  * @return String link
  */
-function cfdr_get_dl_links($name, $cfrd_id) {
+function cfdr_get_dl_links($name, $cfd_id) {
   // add $node_title.pdf to PDF dl path so Adobe Reader gets that as a filename
-  return  l('PDF', "cfdr/$cfrd_id/pdf/$name.pdf") . ' | ' . l('XML', "cfdr/$cfrd_id/xml");
+  return  l('PDF', "cfdr/$cfd_id/pdf/$name.pdf") . ' | ' . l('XML', "cfdr/$cfd_id/xml");
+}
+
+/**
+ * Get the appropriate image for valid, invalid, and to be determined CFD validity
+ *
+ **/
+function cfdr_validity_image($status, $cfd_id) {
+  switch ($status) {
+    case NULL:
+      return l(theme('image', 'misc/watchdog-warning.png', '', 'Click para validar'), "cfdr/$cfd_id/validar", array('html' => TRUE));
+      break;
+    case TRUE:
+      return theme('image', 'misc/watchdog-ok.png');
+      break;
+    case FALSE:
+      return theme('image', 'misc/watchdog-error.png');
+      break;
+  }
 }
 
 /*

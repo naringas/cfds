@@ -82,6 +82,13 @@ function cfdr_schema() {
         'not null' => TRUE,
         'description' => t('The full filename of the XML file'),
       ),
+      'valid' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => 'true',
+        'not null' => FALSE,
+        'description' => 'Stores the validity of the CFD. NULL means it is not validated yet',
+      ),
     ),
     'primary key' => array('cfdr_id'),
     'indexes' => array(
