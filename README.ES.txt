@@ -1,4 +1,4 @@
-cfd  - funcionalidad en común (PDF, etc)
+cfd  - funcionalidad en comÃºn (PDF, etc)
 cfde - cfd emision
 cfdr - cfd recepcion
 
@@ -7,7 +7,7 @@ emision de facturas, por lo tanto incorpora controles de acceso a las facturas
 (o nodos tipo cfd) basandose en el nombre de usuario (que se espera sea igual
 al RFC del cliente).
 
-El modulo cfdr es para la recepción de facturas, por lo tanto cualquier
+El modulo cfdr es para la recepciÃ³n de facturas, por lo tanto cualquier
 usuario con acceso a este modulo puede ver todas las facturas emitidas.
 Ademas el modulo cfdr permite buscar la facturas por serie, folio, fecha, rfc
 emisor, rfc receptor, mientras que el modulo cfde solo permite busqueda por
