@@ -38,7 +38,7 @@
 					<td style="text-align: left"><xsl:value-of select="@descripcion"/></td>
 					<td><xsl:value-of select="@cantidad"/></td>
 					<td><xsl:if test="@unidad"><xsl:value-of select="@unidad"/></xsl:if></td>
-					<td><xsl:value-of select="@valorUnitario"/></td>
+					<td><xsl:value-of select="php:function('number_format', number(@valorUnitario) ,2)"/></td>
 					<td><xsl:value-of select="php:function('number_format', number(@importe), 2)"/></td>
 				</tr>
 			</xsl:for-each>
@@ -58,7 +58,11 @@
 						</tr>
 						<tr>
 							<td class="l h">Descuento global</td>
-							<td class="r h">$<xsl:value-of select="php:function('number_format', number(@descuento), 2)"/></td>
+							<td class="r h">
+								<xsl:if test="@descuento">
+									$<xsl:value-of select="php:function('number_format', number(@descuento), 2)"/>
+								</xsl:if>
+							</td>
 						</tr>
 						<tr>
 							<td class="l h">
