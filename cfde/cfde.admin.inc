@@ -137,7 +137,8 @@ function cfde_admin_cfds() {
         case 'created':
           $value = date_make_date($value, DATE_DATETIME);
           $start = $value->format('U');
-          $end = $value->modify('+23 hours 59 minutes 59 seconds')->format('U');
+          $value->modify('+23 hours 59 minutes 59 seconds');
+          $end = $value->format('U');
 
           $query .= $join . $filter . " >= $start AND " . $filter . " <= $end";
           $join = ' AND ';
@@ -145,7 +146,8 @@ function cfde_admin_cfds() {
 
         case 'fecha_cfd':
           $end = date_make_date($value, DATE_DATETIME);
-          $end = substr($end->modify('+23 hours 59 minutes 59 seconds')->format('c'), 0, 19);
+          $end->modify('+23 hours 59 minutes 59 seconds');
+          $end = substr($end->format('c'), 0, 19);
 
           $query .= $join . $filter . " >= '$value' AND " . $filter . " <= '$end'";
           $join = ' AND ';
