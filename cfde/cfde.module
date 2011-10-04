@@ -103,6 +103,10 @@ function cfde_theme() {
     'cfde_datefilter_inline' => array(
       'arguments' => array('form' => NULL),
     ),
+    'cfde_admin_cfds' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'cfde.admin.inc',
+    ),
   );
 }
 
@@ -355,7 +359,7 @@ function theme_cfde_fields($node) {
 }
 
 /**
- * Themes cfde_view_cdfd() in content management style
+ * Themes cfde_view_cfds() in content management style
  * based on theme_node_admin_nodes() in core - node.admin.inc
  **/
 function theme_cfde_view_cfds($form) {
@@ -391,6 +395,7 @@ function theme_cfde_view_cfds($form) {
 
   return $output;
 }
+
 /**
  * 'cfds/' menu entry callback
  **/
@@ -477,7 +482,7 @@ function cfde_datefilter_form_validate($form, &$form_state) {
   $start = $form_state['values']['start'];
   $end = $form_state['values']['end'];
   $reg_exp = '/[0-9]{4}-[0-9]{2}-[0-9]{2}$/';
-  // TODO fix this
+  // TODO fix this: make it work with only one date?
   if ((!empty($start) && !preg_match($reg_exp, $start)) || (!empty($end) && !preg_match($reg_exp, $end))) {
     form_set_error('date_filter', t('Please use the calendar popup or the format: yyyy-mm-dd'));
   }
